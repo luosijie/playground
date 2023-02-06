@@ -6,7 +6,7 @@ import configResources from './config/resources'
 import World, { Config }  from './World'
 
 import matcapMaterial from './materials/matcap'
-import { MeshMatcapMaterial } from 'three'
+import { MeshBasicMaterial, MeshMatcapMaterial, sRGBEncoding } from 'three'
 
 const loader = new Loader()
 
@@ -37,9 +37,21 @@ loader.onLoadEnd(() => {
     const resources = loader.resources
     console.log('reources', loader.resources)
     const modelScene = loader.resources.playground.scene
+    const textureBaked = resources['texture-baked']
+    textureBaked.flipY = false
+    textureBaked.encoding = sRGBEncoding
+    const bakedMaterial = new MeshBasicMaterial({ map: textureBaked })
+    // console.log(modelScene.children)
     modelScene.children.forEach((e: any) => {
         if (e.type === 'Mesh') {
-            e.material = matcapMaterial(resources['matcap-red'])
+            // e.material = matcapMaterial(resources['matcap-brown'])
+            e.material = bakedMaterial
+            if (e.name.includes('matcap-') || e.name === 'rail') {
+                console.log(e.name)
+                e.material = matcapMaterial(resources['matcap-brown'])
+            } else {
+                e.matcapMaterial = bakedMaterial
+            }
         }
     })
     world.scene.add(modelScene)

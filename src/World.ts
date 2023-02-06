@@ -1,4 +1,4 @@
-import { Clock, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import { Clock, PerspectiveCamera, Scene, sRGBEncoding, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import { Size } from '@/Types'
@@ -42,6 +42,7 @@ export default class World {
         const renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, alpha: true })
         renderer.setSize( this.config.size.width, this.config.size.height)
         renderer.setAnimationLoop( this.render.bind(this) )
+        renderer.outputEncoding = sRGBEncoding
         return renderer
     }
 
