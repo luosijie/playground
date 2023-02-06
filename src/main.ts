@@ -28,7 +28,10 @@ if (canvas instanceof HTMLElement) {
 
 }
 
+// Load resources
 loader.load(resources)
+
+// Render scene when resources is ready
 loader.onLoadEnd(() => {
     const modelScene = loader.resources.playground.scene
     modelScene.children.forEach((e: any) => {
@@ -38,7 +41,6 @@ loader.onLoadEnd(() => {
         }
     })
     world.scene.add(modelScene)
-    console.log(loader.resources)
 })
 
 window.addEventListener('resize', () => {

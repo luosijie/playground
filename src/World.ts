@@ -1,8 +1,7 @@
-import * as THREE from 'three'
-import { Clock, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
+import { Clock, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-import { Size } from './Types'
+import { Size } from '@/Types'
 
 export interface Config {
     resources: any,
@@ -35,35 +34,34 @@ export default class World {
         this.updateCamera()
     }
 
+    setRenderer () {
+        const renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, alpha: true })
+        renderer.setSize( this.config.size.width, this.config.size.height)
+        renderer.setAnimationLoop( this.render.bind(this) )
+        return renderer
+    }
+
+    setCamera () {
+        const camera = new PerspectiveCamera( 40, this.config.size.width / this.config.size.height, 0.01, 1000 )
+        const multiple = 23
+        camera.position.copy(new Vector3(1.135 * multiple,  1.45 * multiple, 1.15 * multiple))
+        return camera
+    }
+
     render () {
 
         this.controls.update()
         this.renderer.render( this.scene, this.camera )
     }
 
-    setCamera () {
-        const camera = new PerspectiveCamera( 25, this.config.size.width / this.config.size.height, 0.01, 1000 )
-        camera.position.z = 20
-        camera.position.y = 20
-        camera.position.x = 20
-        return camera
-    }
-
     updateCamera () {
 
-        const angle = Math.atan( (this.config.size.height / 2) / 100 )
-        const fov = angle * 180 / Math.PI * 2
-        this.camera.fov = fov
+        // const angle = Math.atan( (this.config.size.height / 2) / 100 )
+        // const fov = angle * 180 / Math.PI * 2
+        // this.camera.fov = fov
         this.camera.aspect = this.config.size.width / this.config.size.height
 
         this.camera.updateProjectionMatrix()
-    }
-
-    setRenderer () {
-        const renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, alpha: true })
-        renderer.setSize( this.config.size.width, this.config.size.height)
-        renderer.setAnimationLoop( this.render.bind(this) )
-        return renderer
     }
 
     updateSize (width: number, height: number) {
@@ -78,15 +76,6 @@ export default class World {
 
         this.renderer.setSize(width, height)
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-
-    }
-
-    setCube () {
-        const geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 )
-        const material = new THREE.MeshNormalMaterial()
-
-        const mesh = new THREE.Mesh( geometry, material )
-        return mesh
 
     }
 }

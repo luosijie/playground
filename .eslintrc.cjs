@@ -21,6 +21,7 @@ module.exports = {
         semi: ['error', 'never'],
         quotes: ['error', 'single'],
         indent: ['error', 4],
+        '@typescript-eslint/no-explicit-any': 'off',
         'no-control-regex': 0,
         'block-spacing': [2, 'always'],
         'keyword-spacing': [2, { before: true, after: true }],
