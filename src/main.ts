@@ -1,11 +1,12 @@
 import './style.scss'
 
 import Loader from './utils/Loader'
-import resources from './config/resources'
+import configResources from './config/resources'
 
 import World, { Config }  from './World'
 
-import defaultMaterial from './materials/default'
+import matcapMaterial from './materials/matcap'
+import { MeshMatcapMaterial } from 'three'
 
 const loader = new Loader()
 
@@ -29,15 +30,16 @@ if (canvas instanceof HTMLElement) {
 }
 
 // Load resources
-loader.load(resources)
+loader.load(configResources)
 
 // Render scene when resources is ready
 loader.onLoadEnd(() => {
+    const resources = loader.resources
+    console.log('reources', loader.resources)
     const modelScene = loader.resources.playground.scene
     modelScene.children.forEach((e: any) => {
         if (e.type === 'Mesh') {
-            e.material = defaultMaterial
-            console.log('mesh', e)
+            e.material = matcapMaterial(resources['matcap-red'])
         }
     })
     world.scene.add(modelScene)

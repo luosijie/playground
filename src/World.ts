@@ -26,24 +26,29 @@ export default class World {
         this.clock = new Clock()
 
         this.canvas = config.canvas
-        this.renderer = this.setRenderer()
+        this.renderer = this.createRenderer()
         this.scene = new Scene()
-        this.camera = this.setCamera()
+        this.camera = this.createCamera()
         this.controls = new OrbitControls(this.camera, this.canvas)
 
         this.updateCamera()
     }
 
-    setRenderer () {
+    init () {
+        this.setBackground()
+    }
+
+    createRenderer () {
         const renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, alpha: true })
         renderer.setSize( this.config.size.width, this.config.size.height)
         renderer.setAnimationLoop( this.render.bind(this) )
         return renderer
     }
 
-    setCamera () {
+    createCamera () {
         const camera = new PerspectiveCamera( 40, this.config.size.width / this.config.size.height, 0.01, 1000 )
         const multiple = 23
+        
         camera.position.copy(new Vector3(1.135 * multiple,  1.45 * multiple, 1.15 * multiple))
         return camera
     }
@@ -56,9 +61,6 @@ export default class World {
 
     updateCamera () {
 
-        // const angle = Math.atan( (this.config.size.height / 2) / 100 )
-        // const fov = angle * 180 / Math.PI * 2
-        // this.camera.fov = fov
         this.camera.aspect = this.config.size.width / this.config.size.height
 
         this.camera.updateProjectionMatrix()
@@ -66,8 +68,7 @@ export default class World {
 
     updateSize (width: number, height: number) {
 
-        // Update camera
-        
+        // Update camera        
         this.updateCamera()
 
         // Update renderer
@@ -76,6 +77,10 @@ export default class World {
 
         this.renderer.setSize(width, height)
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        
+    }
 
+    setBackground () {
+        //
     }
 }
