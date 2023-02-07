@@ -56,16 +56,6 @@ export default class Loader {
         this.textureLoader = textureLoader
     }
 
-    // Register a fileLoaded function
-    onFileLoaded (callback: (name: string, res: any) => any) {
-        this.fileLoaded = callback
-    }
-
-    // Register a loadEnd function
-    onLoadEnd (callback: () => void) {
-        this.loadEnd = callback
-    }
-
     // Load files
     load (resources: Array<Resource>) {
         this.total += resources.length
@@ -77,6 +67,16 @@ export default class Loader {
                 this.loadResource(resource)
             }
         }
+    }
+
+    // Regist a fileLoaded function
+    onFileLoaded (callback: (name: string, res: any) => any) {
+        this.fileLoaded = callback
+    }
+
+    // Regist a loadEnd function
+    onLoadEnd (callback: (resources: any) => void) {
+        this.loadEnd = callback
     }
 
     private loadVideo (resource: Resource) {

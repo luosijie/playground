@@ -3,58 +3,33 @@ import './style.scss'
 import Loader from './utils/Loader'
 import configResources from './config/resources'
 
-import World, { Config }  from './World'
-
-import matcapMaterial from './materials/matcap'
-import { MeshBasicMaterial, MeshMatcapMaterial, sRGBEncoding } from 'three'
+import World from './Elements/World'
+import { Config } from './Types'
 
 const loader = new Loader()
 
+// Config ready to create world
 const config: Config = {
-    resources: {},
-    canvas: document.createElement('canvas'),
-    size: {
-        width: window.innerWidth,
-        height: window.innerHeight
-    }
+    width: window.innerWidth,
+    height: window.innerHeight,
+    canvas: document.createElement('canvas')
 }
 
 let world: World
 
+// Init canvas
 const canvas = document.querySelector('canvas')
-if (canvas instanceof HTMLElement) {
+if (canvas) {
     config.canvas = canvas
-    
     world = new World(config)
-
 }
 
 // Load resources
 loader.load(configResources)
 
-// Render scene when resources is ready
-loader.onLoadEnd(() => {
-    const resources = loader.resources
-    console.log('reources', loader.resources)
-    const modelScene = loader.resources.playground.scene
-    const textureBaked = resources['texture-baked']
-    textureBaked.flipY = false
-    textureBaked.encoding = sRGBEncoding
-    const bakedMaterial = new MeshBasicMaterial({ map: textureBaked })
-    // console.log(modelScene.children)
-    modelScene.children.forEach((e: any) => {
-        if (e.type === 'Mesh') {
-            // e.material = matcapMaterial(resources['matcap-brown'])
-            e.material = bakedMaterial
-            if (e.name.includes('matcap-') || e.name === 'rail') {
-                console.log(e.name)
-                e.material = matcapMaterial(resources['matcap-brown'])
-            } else {
-                e.matcapMaterial = bakedMaterial
-            }
-        }
-    })
-    world.scene.add(modelScene)
+// Render world elements when resources is ready
+loader.onLoadEnd(resources => {
+    world.build(resources)
 })
 
 window.addEventListener('resize', () => {
