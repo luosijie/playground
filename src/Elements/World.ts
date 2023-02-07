@@ -90,7 +90,7 @@ export default class World {
     }
 
     private setBackground () {
-        const colors = [ new Color('#cfbfa7'), new Color('#cfbfa7'), new Color('#cbbda5'), new Color('#ded5c8') ]
+        const colors = [ new Color('#b07853'), new Color('#b57750'), new Color('#b98968'), new Color('#bc8b6a') ]
         const background = new Background(colors)
         this.scene.add(background.main)
     }
