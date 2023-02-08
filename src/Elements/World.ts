@@ -1,4 +1,4 @@
-import { Clock, Color, Group, Mesh, PerspectiveCamera, Scene, sRGBEncoding, Vector3, WebGLRenderer } from 'three'
+import { Clock, Color, Group, Mesh, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import Background from './Background'
@@ -57,10 +57,16 @@ export default class World {
     }
 
     private createRenderer () {
-        const renderer = new WebGLRenderer({ antialias: true, canvas: this.canvas, alpha: true })
+        const renderer = new WebGLRenderer({ 
+            canvas: this.canvas,
+            antialias: true,  
+            alpha: true 
+        })
         renderer.setSize( this.width, this.height)
         renderer.setAnimationLoop( this.render.bind(this) )
-        renderer.outputEncoding = sRGBEncoding
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+        // renderer.outputEncoding = sRGBEncoding
         return renderer
     }
 
@@ -94,7 +100,7 @@ export default class World {
     }
 
     private setBackground () {
-        const colors = [ new Color('#b07853'), new Color('#b57750'), new Color('#b98968'), new Color('#bc8b6a') ]
+        const colors = [ new Color('#de9362'), new Color('#dd9b6a'), new Color('#d79a6f'), new Color('#d9976c') ]
         const background = new Background(colors)
         this.scene.add(background.main)
     }
@@ -201,7 +207,6 @@ export default class World {
         this.height = height
 
         this.renderer.setSize(width, height)
-        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
         
     }
     

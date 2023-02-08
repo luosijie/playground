@@ -22,24 +22,22 @@ export default class Background {
         const bottomLeft = this.colors[3]
 
         const data = new Uint8Array([
-            Math.round(bottomLeft.r * 255), Math.round(bottomLeft.g * 255), Math.round(bottomLeft.b * 255), 1,
-            Math.round(bottomRight.r * 255), Math.round(bottomRight.g * 255), Math.round(bottomRight.b * 255), 1,
-            Math.round(topLeft.r * 255), Math.round(topLeft.g * 255), Math.round(topLeft.b * 255), 1,
-            Math.round(topRight.r * 255), Math.round(topRight.g * 255), Math.round(topRight.b * 255), 1
+            Math.floor(bottomLeft.r * 255), Math.floor(bottomLeft.g * 255), Math.floor(bottomLeft.b * 255), 255,
+            Math.floor(bottomRight.r * 255), Math.floor(bottomRight.g * 255), Math.floor(bottomRight.b * 255), 255,
+            Math.floor(topLeft.r * 255), Math.floor(topLeft.g * 255), Math.floor(topLeft.b * 255), 255,
+            Math.floor(topRight.r * 255), Math.floor(topRight.g * 255), Math.floor(topRight.b * 255), 255,
         ])
         
         const texture = new DataTexture(data, 2, 2, RGBAFormat)
         texture.magFilter = LinearFilter
         texture.needsUpdate = true
-        
-        const uniforms = {
-            tBackground: { value: texture }
-        }
 
         const material = new ShaderMaterial({
             wireframe: false,
             transparent: false,
-            uniforms,
+            uniforms: {
+                uBackground: { value: texture }
+            },
             vertexShader,
             fragmentShader
         })
