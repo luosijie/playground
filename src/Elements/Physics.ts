@@ -1,4 +1,4 @@
-import { Body, ContactMaterial, Material, Plane, SAPBroadphase, Vec3, World } from 'cannon-es'
+import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World } from 'cannon-es'
 
 interface Materials {
     ground: Material
@@ -17,7 +17,7 @@ export default class Physics {
 
     private createWorld () {
         const world = new World()
-        world.gravity.set(0, -9.82, 0)
+        world.gravity.set(0, 0, -9.82)
         world.broadphase = new SAPBroadphase(world)
         world.defaultContactMaterial.friction = 0
 
@@ -51,7 +51,6 @@ export default class Physics {
             material: this.materials.ground
         })
         ground.addShape(new Plane())
-        ground.quaternion.setFromAxisAngle(new Vec3(1, 0, 0), -Math.PI / 2)
 
         this.world.addBody(ground)
     }

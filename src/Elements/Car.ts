@@ -1,8 +1,8 @@
-import { Group, Mesh, Box3, Scene } from 'three'
+import { Group, Mesh, Box3 } from 'three'
 // import Shadow from './Shadow'
 
 import * as CANNON from 'cannon-es'
-import { Body, Box, Cylinder, RaycastVehicle, Vec3 } from 'cannon-es'
+import { Body, Box, Cylinder, Quaternion, RaycastVehicle, Vec3 } from 'cannon-es'
 import Physics from './Physics'
 
 const options = {
@@ -29,7 +29,7 @@ const options = {
         maxSuspensionTravel: 1,
         customSlidingRotationalSpeed: 30,
         useCustomSlidingRotationalSpeed: true,
-        directionLocal: new CANNON.Vec3(0, -1, 0), // 车轮向下方向
+        directionLocal: new CANNON.Vec3(0, 0, -1), // 车轮向下方向
         axleLocal: new CANNON.Vec3(1, 0, 0), // 车轴方向
         chassisConnectionPointLocal: new CANNON.Vec3(0, 0, 0), // 车轮连接点
     },
@@ -84,7 +84,7 @@ export default class Car {
 
         this.vehicle = this.createVehicle()
 
-        this.setControls()
+        // this.setControls()
 
         this.isReady = true
     }
@@ -100,10 +100,10 @@ export default class Car {
         // there has a wheel in the backside of the car
         const wheelBU = this.createWheel('left')
         wheelBU.name = 'wheelBU'
-        wheelBU.position.x = 0
-        wheelBU.position.z = -0.88
-        wheelBU.position.y = 0.75
-        wheelBU.rotation.y = Math.PI / 2
+        wheelBU.position.x = 0.1
+        wheelBU.position.z = -0.402342
+        wheelBU.position.y = 0.742586
+        wheelBU.rotation.z = Math.PI / 2
         body.add(wheelBU)
         
         // get body box size and center
@@ -173,22 +173,12 @@ export default class Car {
         this.model.children.forEach((modelMesh: any) => {
             if (!modelMesh.name.includes('wheel')) return
             const mesh = modelMesh.clone()
+            mesh.position.set(0, 0, 0)
             
             wheel.add(mesh)
-            switch (mesh.name) {
-            case 'wheel-outside':
-                mesh.position.set(0, 0, 0)
-                if (direction === 'right') {
-                    mesh.rotateZ(Math.PI)
-                }
-                break
-            case 'wheel-inside':
-                mesh.position.set(0.03, 0, 0)
-                if (direction === 'right') {
-                    mesh.position.set(-0.03, 0, 0)
-                    mesh.rotateZ(Math.PI)
-                }
-                break
+            
+            if (direction === 'right') {
+                wheel.rotateZ(Math.PI)
             }
         })
         return wheel
@@ -219,9 +209,9 @@ export default class Car {
         chassisBody.allowSleep = true
         // chassisBody.sleep()
         chassisBody.addShape(chassisShape)
-        chassisBody.position.set(0, 4, 0)
+        chassisBody.position.set(0, 0, 4)
         // chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0)
-        chassisBody.angularVelocity.set(0, 0, 0.5)
+        chassisBody.angularVelocity.set(0, 0, .5)
 
         this.physicsBodys['body'] = chassisBody
 
@@ -229,8 +219,8 @@ export default class Car {
         const vehicle = new RaycastVehicle({
             chassisBody,
             indexRightAxis: 0,
-            indexUpAxis: 1,
-            indexForwardAxis: 2,
+            indexUpAxis: 2,
+            indexForwardAxis: 1,
         })
 
         this.physicsBodys['wheels'] = []
@@ -240,16 +230,16 @@ export default class Car {
             const option = { ...this.options.wheel }
             switch (i) {
             case 0:
-                option.chassisConnectionPointLocal.set(option.offsetWidth, 0, option.frontOffsetLength)
+                option.chassisConnectionPointLocal.set(option.offsetWidth, -option.frontOffsetLength, 0)
                 break
             case 1:
-                option.chassisConnectionPointLocal.set(-option.offsetWidth, 0, option.frontOffsetLength)
+                option.chassisConnectionPointLocal.set(-option.offsetWidth, -option.frontOffsetLength, 0)
                 break
             case 2:
-                option.chassisConnectionPointLocal.set(option.offsetWidth, 0, option.backOffsetLength)
+                option.chassisConnectionPointLocal.set(-option.offsetWidth, option.backOffsetLength, 0)
                 break
             case 3:
-                option.chassisConnectionPointLocal.set(-option.offsetWidth, 0, option.backOffsetLength)
+                option.chassisConnectionPointLocal.set(option.offsetWidth, option.backOffsetLength, 0)
                 break
             }
             vehicle.addWheel(option)
@@ -260,9 +250,10 @@ export default class Car {
             const wheelBody = new Body({ mass: 0, material: this.physics.materials.wheel })
             wheelBody.type = Body.KINEMATIC
             wheelBody.collisionFilterGroup = 0
-            const wheelQuaternion = new CANNON.Quaternion()
-            wheelQuaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI / 2)   
-            wheelBody.addShape(wheelShape, new CANNON.Vec3(), wheelQuaternion)  
+            
+            const wheelQuaternion = new Quaternion()
+            wheelQuaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2)   
+            wheelBody.addShape(wheelShape, new Vec3(), wheelQuaternion)  
 
             this.physicsBodys['wheels'][i] = wheelBody
             this.physics.world.addBody(wheelBody)

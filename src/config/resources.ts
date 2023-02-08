@@ -1,10 +1,8 @@
 import { LoaderType } from '../utils/Loader'
 export default [
     { name: 'model-playground', type: LoaderType.GLTF, path: '/models/playground.glb'},
-    { name: 'model-rail-car', type: LoaderType.GLTF, path: '/models/rail-car.glb'},
     { name: 'model-car', type: LoaderType.GLTF, path: '/models/car.glb'},
     { name: 'model-physics-static', type: LoaderType.GLTF, path: '/models/physics-static.glb'},
-    { name: 'texture-baked', type: LoaderType.Texture, path: '/textures/baked.jpg'},
     { name: 'matcap-black', type: LoaderType.Texture, path: '/matcaps/black.png'},
     { name: 'matcap-blue-light', type: LoaderType.Texture, path: '/matcaps/blue-light.png'},
     { name: 'matcap-blue-lighter', type: LoaderType.Texture, path: '/matcaps/blue-lighter.png'},
@@ -15,6 +13,7 @@ export default [
     { name: 'matcap-brown', type: LoaderType.Texture, path: '/matcaps/brown.png'},
     { name: 'matcap-eye', type: LoaderType.Texture, path: '/matcaps/eye.png'},
     { name: 'matcap-green', type: LoaderType.Texture, path: '/matcaps/green.png'},
+    { name: 'matcap-green-light', type: LoaderType.Texture, path: '/matcaps/green-light.png'},
     { name: 'matcap-pink', type: LoaderType.Texture, path: '/matcaps/pink.png'},
     { name: 'matcap-purple', type: LoaderType.Texture, path: '/matcaps/purple.png'},
     { name: 'matcap-purple-dark', type: LoaderType.Texture, path: '/matcaps/purple-dark.png'},

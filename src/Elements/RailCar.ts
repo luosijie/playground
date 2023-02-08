@@ -1,25 +1,24 @@
-import { Group } from 'three'
+import { Group, Mesh } from 'three'
 
 export default class RailCar {
-    model: Group
+    models: Array<Mesh>
     main: Group
-    constructor (model: Group) {
-        this.model = model
+    constructor (models: Array<Mesh>) {
+        
+        this.models = models
         this.main = this.createMain()
     }
 
     private createMain () {
         const main = new Group()
-        const children = this.model.children
-        const startCenter = children[0].position.clone()
-        children.forEach(e => {
+        const startPosition = this.models[0].position.clone()
+        this.models.forEach(e => {
             e.position.set(0, 0, 0)
-            main.add(e.clone())
+            main.add(e)
         })
 
-        console.log('group', main)
         // this.main.rotateY(Math.PI)
-        main.position.copy(startCenter)
+        main.position.copy(startPosition)
         return main
     }
 }
