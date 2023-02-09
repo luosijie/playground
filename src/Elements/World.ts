@@ -7,11 +7,10 @@ import { Config } from '../Types'
 
 import matcapMaterial from '@/materials/matcap'
 
-import handleRepeats, { RepeatedModels } from '@/functions/handleRepeats'
-
 import RailCar from './RailCar'
 import Car from './Car'
 import Physics from './Physics'
+import Repeats from './Repeats'
 
 export default class World {
 
@@ -32,6 +31,7 @@ export default class World {
     // Elements in world
     railCar: RailCar
     car: Car
+    repeats: Repeats
 
     constructor (config: Config) {
         this.width = config.width
@@ -47,6 +47,7 @@ export default class World {
         
         this.physics = new Physics()
         this.car = new Car(this.physics)
+        this.repeats = new Repeats()
         
         this.init()
     }
@@ -114,19 +115,6 @@ export default class World {
         const modelCarScene = resources['model-car'].scene
         const modelRailCar : Array<Mesh> = []
 
-        const repeatModels : RepeatedModels = {
-            mole: new Group(),
-            teaShopFan: new Group(),
-            carStationFan: new Group(),
-            coffeeCarWheel: new Group(),
-            dropUpCylinder: new Mesh(),
-            coffeChair: new Mesh(),
-            coffeTable: new Mesh(),
-            sheep: new Group(),
-            chicken: new Group(),
-            rabbit: new Group()
-        }
-
         const models = modelPlayground.children
 
         models.forEach((e: any) => {
@@ -137,55 +125,24 @@ export default class World {
                 e.material = matcapMaterial(resources[`matcap-${data.matcap}`])
             }
 
-            if (data.name === 'mole') {
-                repeatModels.mole.add(e.clone())
-            }
-            if (data.name === 'tea-shop-fan') {
-                repeatModels.teaShopFan.add(e.clone())
-            }
-            if (data.name === 'car-station-fan') {
-                repeatModels.carStationFan.add(e.clone())
-            }
-            if (data.name === 'coffee-car-wheel') {
-                const n = e.clone()
-                n.position.copy(new Vector3())
-                repeatModels.coffeeCarWheel.add(n)
-            }
-            if (data.name === 'coffee-chair') {
-                repeatModels.coffeChair = e
-            }
-            if (data.name === 'coffee-table') {
-                repeatModels.coffeTable = e
-            }
-            if (data.name === 'sheep') {
-                const n = e.clone()
-                n.position.copy(new Vector3())
-                repeatModels.sheep.add(n)
-            }
-            if (data.name === 'chicken') {
-                const n = e.clone()
-                n.position.copy(new Vector3())
-                repeatModels.chicken.add(n)
-            }
-            if (data.name === 'rabbit') {
-                const n = e.clone()
-                n.position.copy(new Vector3())
-                repeatModels.rabbit.add(n)
-            }
-            if (data.name === 'drop-up-cylinder') {
-                repeatModels.dropUpCylinder = e
+            // models to dunplicate
+            // if (this.re)
+            if (this.repeats.contains(data.name)) {
+                this.repeats.add(data.name, e)
             }
 
             // modles to animate
             if (data.name === 'rail-car') {
                 modelRailCar.push(e)
-                // modelPlayground.remove(e)
             }
         })
 
-        handleRepeats(repeatModels, this.scene)
+        // handleRepeats(repeatModels, this.scene)
 
         this.scene.add(modelPlayground)
+
+        this.repeats.build()
+        this.scene.add(this.repeats.main)
 
         // init rail car
         this.railCar = new RailCar(modelRailCar)
