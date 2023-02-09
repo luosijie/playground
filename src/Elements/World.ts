@@ -1,4 +1,4 @@
-import { Clock, Color, Group, Mesh, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import { Clock, Color, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import Background from './Background'
@@ -11,8 +11,15 @@ import RailCar from './RailCar'
 import Car from './Car'
 import Physics from './Physics'
 import Repeats from './Repeats'
+import Windmill from './Windmill'
+import Carousel from './Carousel'
+import Ship from './Ship'
+import DropRotation from './DropRotation'
+import Ferris from './Ferris'
+import DropUp from './DropUp'
 
 export default class World {
+    isReady: boolean
 
     width: number
     height: number
@@ -29,11 +36,19 @@ export default class World {
     physics: Physics
 
     // Elements in world
-    railCar: RailCar
-    car: Car
     repeats: Repeats
+    railCar: RailCar
+    windmill: Windmill
+    carousel: Carousel
+    ship: Ship
+    dropRotation: DropRotation
+    dropUp: DropUp
+    ferris: Ferris
+    car: Car
 
     constructor (config: Config) {
+        this.isReady = false
+
         this.width = config.width
         this.height = config.height
 
@@ -45,9 +60,17 @@ export default class World {
         this.camera = this.createCamera()
         this.controls = new OrbitControls(this.camera, this.canvas)
         
+        this.railCar = new RailCar()
+        this.repeats = new Repeats()
+        this.windmill = new Windmill()
+        this.carousel = new Carousel()
+        this.ship = new Ship()
+        this.dropRotation = new DropRotation()
+        this.dropUp = new DropUp()
+        this.ferris = new Ferris()
+
         this.physics = new Physics()
         this.car = new Car(this.physics)
-        this.repeats = new Repeats()
         
         this.init()
     }
@@ -87,7 +110,15 @@ export default class World {
         // const elapsedTime = this.clock.getElapsedTime()
         this.physics.world.fixedStep()
         
-        this.car.isReady && this.car.update()
+        if (this.isReady) {
+            this.car.update()
+            this.windmill.update()
+            this.carousel.update()
+            this.ship.update()
+            this.dropRotation.update()
+            this.dropUp.update()
+            this.ferris.update()
+        } 
 
         this.controls.update()
         this.renderer.render( this.scene, this.camera )
@@ -96,7 +127,6 @@ export default class World {
     private updateCamera () {
 
         this.camera.aspect = this.width / this.height
-
         this.camera.updateProjectionMatrix()
     }
 
@@ -113,8 +143,6 @@ export default class World {
 
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
-        const modelRailCar : Array<Mesh> = []
-
         const models = modelPlayground.children
 
         models.forEach((e: any) => {
@@ -126,31 +154,69 @@ export default class World {
             }
 
             // models to dunplicate
-            // if (this.re)
             if (this.repeats.contains(data.name)) {
                 this.repeats.add(data.name, e)
             }
 
             // modles to animate
             if (data.name === 'rail-car') {
-                modelRailCar.push(e)
+                this.railCar.add(e)
+            }
+
+            if (data.name === 'windmill') {
+                this.windmill.add(e)
+            }
+
+            if (data.name === 'carousel-rotation') {
+                this.carousel.add(e)
+            }
+
+            if (data.name.includes('ship')) {
+                this.ship.add(e)
+            }
+
+            if (data.name.includes('drop-rotation')) {
+                this.dropRotation.add(e)
+            }
+
+            if (data.name.includes('drop-up-seat')) {
+                this.dropUp.add(e)
+            }
+
+            if (data.name.includes('ferris')) {
+                this.ferris.add(e)
             }
         })
-
-        // handleRepeats(repeatModels, this.scene)
 
         this.scene.add(modelPlayground)
 
         this.repeats.build()
         this.scene.add(this.repeats.main)
 
+        this.carousel.build()
+        this.scene.add(this.carousel.main)
+
+        this.ship.build()
+        this.scene.add(this.ship.main)
+
+        this.dropRotation.build()
+        this.scene.add(this.dropRotation.main)
+
+        this.dropUp.build()
+        this.scene.add(this.dropUp.main)
+        
+        this.ferris.build()
+        this.scene.add(this.ferris.main)
+
         // init rail car
-        this.railCar = new RailCar(modelRailCar)
+        this.railCar.build()
         this.scene.add(this.railCar.main)
 
         // init car
         this.car.build(modelCarScene)
         this.scene.add(this.car.main)
+
+        this.isReady = true
     }
 
     // Update canvas size when window resizing

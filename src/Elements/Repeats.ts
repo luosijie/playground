@@ -24,6 +24,7 @@ export default class Repeats {
             'drop-up-cylinder': new Mesh(),
             'coffee-chair': new Mesh(),
             'coffee-table': new Mesh(),
+            'station-sylinder': new Mesh(),
             'sheep': new Group(),
             'chicken': new Group(),
             'rabbit': new Group()
@@ -72,13 +73,22 @@ export default class Repeats {
             }
         }
 
-        // tea-station-fan
+        // car-station-fan
         const carStationFan = this.models['car-station-fan']
         const carStationFanGap = 2.2
         const carStationFanNum = 4
         carStationFan.position.copy(new Vector3(-11.5902, 20.8363, 6.09009))
         for (let x = 1; x < carStationFanNum; x++) {
             const n = carStationFan.clone().translateX(x * carStationFanGap)
+            this.main.add(n)
+        }
+
+        // car-station-fan
+        const statiopnSylinder = this.models['station-sylinder']
+        const statiopnSylinderGap = 2.7
+        const statiopnSylinderNum = 4
+        for (let x = 1; x < statiopnSylinderNum; x++) {
+            const n = statiopnSylinder.clone().translateX(x * statiopnSylinderGap)
             this.main.add(n)
         }
 

@@ -41,8 +41,6 @@ const options = {
 }
 
 export default class Car {
-    isReady: boolean
-
     model: Group
     physics: Physics
 
@@ -57,8 +55,6 @@ export default class Car {
 
     controls: any
     constructor (physics: Physics) {
-
-        this.isReady = false
 
         this.physics = physics
 
@@ -85,8 +81,6 @@ export default class Car {
         this.vehicle = this.createVehicle()
 
         // this.setControls()
-
-        this.isReady = true
     }
     
     private createBody () {
