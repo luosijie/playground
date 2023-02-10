@@ -142,15 +142,13 @@ export default class World {
 
     // Build world elements with resources
     build (resources: any) {
-        
-        console.log('reources', resources)
 
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
         const models = modelPlayground.children
 
         const dataRailPoints = resources['data-rail-points']
-        this.railCar.addPathLine(dataRailPoints, this.scene)
+        this.railCar.addPathLine(dataRailPoints)
 
         models.forEach((e: any) => {
             const data = e.userData

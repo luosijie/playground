@@ -1,16 +1,15 @@
-import { ArrowHelper, BufferGeometry, CurvePath, Group, Line, LineBasicMaterial, LineCurve3, Mesh, Scene, Vector3 } from 'three'
+import { ArrowHelper, BufferGeometry, CurvePath, Object3D, Line, LineBasicMaterial, LineCurve3, Mesh, Scene, Vector3 } from 'three'
 import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js'
 
-const SPEED = 0.001
-const UP = new Vector3(0, 0, 1)
+const SPEED = 0.0008
 export default class RailCar {
     models: Array<Mesh>
     path: CurvePath<any>
-    main: Group
+    main: Object3D
     progress: number
     constructor () {
         this.models = []
-        this.main = new Group()
+        this.main = new Object3D()
         this.path = new CurvePath()
         this.progress = 1
     }
@@ -20,7 +19,8 @@ export default class RailCar {
         this.models.push(object)
     }
 
-    addPathLine (geometry: BufferGeometry, scene: Scene) {
+    addPathLine (geometry: BufferGeometry) {
+        console.log('--', geometry)
         const position = geometry.attributes.position.array
         const nums = 52
         const points = []
@@ -38,14 +38,8 @@ export default class RailCar {
             this.path.add(line)
         }
 
-        for (let i = 0; i < 400 - 1; i++) {
-            const frictionStart = i / 400
-            const point = this.path.getPoint(frictionStart)
-            const tangent = this.path.getTangent(frictionStart)
-            tangent.negate()
-            const arrow = new ArrowHelper(tangent, point, 2, 0xff0000)
-            scene.add(arrow)
-        }
+        const lastLine = new LineCurve3(points[nums - 1], points[0])
+        this.path.add(lastLine)
     }
 
     // Param pathpoints : help to generate rail path
@@ -72,21 +66,23 @@ export default class RailCar {
         const tangent = this.path.getTangent(this.progress)
         tangent.negate()
         
-        // const axis = new Vector3().crossVectors(UP, tangent).normalize()
-        // const randY = Math.acos(UP.dot(tangent))
+        // set axis-x rotation
         const randY = new Vector3(0, 0, 1).angleTo(tangent)
-        const t = tangent.clone()
-        t.z = 0
-        const randZ = new Vector3(1, 0, 0).angleTo(t)
-        console.log('tangent', parseInt(randZ / Math.PI * 180), tangent)
+        const axis = new Vector3(0, 1, 0)
+        axis.applyAxisAngle(new Vector3(0, 0, 1), this.main.rotation.z)
+        this.main.setRotationFromAxisAngle(axis, randY - Math.PI / 2)
 
-        // const angle = Math.cross
-        // this.main.quaternion.setFromAxisAngle(axis, rand)
-        // this.main.rotation.y = randY - Math.PI / 2
-        this.main.rotation.z = -randZ
+        // set axis-z rotation
+        const tangentZ = tangent.clone()
+        tangentZ.z = 0
+        const randZ = new Vector3(1, 0, 0).angleTo(tangentZ)
+       
+        if (new Vector3(1, 0, 0).cross(tangent).z > 0) {
+            this.main.rotation.z = Math.PI + randZ
+        } else {
+            this.main.rotation.z = -randZ
+        }
 
         this.main.position.copy(curentPoint)
-        // this.main.lookAt(targetPPoint)
-
     }
 }
