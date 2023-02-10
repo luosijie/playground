@@ -1,5 +1,6 @@
 import { LoaderType } from '../utils/Loader'
 export default [
+    { name: 'data-rail-points', type: LoaderType.PLY, path: '/models/rail-points.ply'},
     { name: 'model-playground', type: LoaderType.GLTF, path: '/models/playground.glb'},
     { name: 'model-car', type: LoaderType.GLTF, path: '/models/car.glb'},
     { name: 'model-physics-static', type: LoaderType.GLTF, path: '/models/physics-static.glb'},

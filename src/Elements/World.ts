@@ -1,4 +1,4 @@
-import { Clock, Color, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import { AxesHelper, Clock, Color, PerspectiveCamera, Points, PointsMaterial, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import Background from './Background'
@@ -73,6 +73,9 @@ export default class World {
         this.car = new Car(this.physics)
         
         this.init()
+
+        const axesHelper = new AxesHelper(50)
+        this.scene.add(axesHelper)
     }
 
     private init () { 
@@ -118,6 +121,7 @@ export default class World {
             this.dropRotation.update()
             this.dropUp.update()
             this.ferris.update()
+            this.railCar.update()
         } 
 
         this.controls.update()
@@ -144,6 +148,9 @@ export default class World {
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
         const models = modelPlayground.children
+
+        const dataRailPoints = resources['data-rail-points']
+        this.railCar.addPathLine(dataRailPoints, this.scene)
 
         models.forEach((e: any) => {
             const data = e.userData
@@ -186,6 +193,7 @@ export default class World {
             if (data.name.includes('ferris')) {
                 this.ferris.add(e)
             }
+            
         })
 
         this.scene.add(modelPlayground)

@@ -2,13 +2,15 @@
 import { NearestFilter, sRGBEncoding, TextureLoader, VideoTexture } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js'
+import { PLYLoader } from 'three/examples/jsm/loaders/PLYLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
 
 export enum LoaderType {
     Texture = 'Texture',
     GLTF = 'GLTF',
     FBX = 'FBX',
-    Video = 'Video'
+    Video = 'Video',
+    PLY = 'PLY'
 }
 
 interface Resource {
@@ -29,6 +31,7 @@ export default class Loader {
     private gltfLoader: GLTFLoader
     private fbxLoader: FBXLoader
     private textureLoader: TextureLoader
+    private plyLoader: PLYLoader
     
     constructor () {
         this.resources = {}
@@ -48,12 +51,14 @@ export default class Loader {
         this.gltfLoader = gltfLoader
 
         // FBX loader
-        const fbxLoader = new FBXLoader()
-        this.fbxLoader = fbxLoader
-
+        this.fbxLoader = new FBXLoader()
+        
         // Texture loader
-        const textureLoader = new TextureLoader()
-        this.textureLoader = textureLoader
+        this.textureLoader = new TextureLoader()
+
+        // PLY loader
+        this.plyLoader = new PLYLoader()
+
     }
 
     // Load files
@@ -114,7 +119,7 @@ export default class Loader {
             return
         }
 
-        let loader: GLTFLoader | FBXLoader | TextureLoader = this.textureLoader
+        let loader: GLTFLoader | FBXLoader | TextureLoader | PLYLoader = this.textureLoader
 
         switch (type) {
         case LoaderType.GLTF:
@@ -125,6 +130,9 @@ export default class Loader {
             break
         case LoaderType.Texture:
             loader = this.textureLoader
+            break
+        case LoaderType.PLY:
+            loader = this.plyLoader
             break
         default:
             loader = this.textureLoader
