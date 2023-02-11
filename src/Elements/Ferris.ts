@@ -17,7 +17,7 @@ export default class Ferris {
         this.bodyModel = new Mesh()
 
         this.main = new Group()
-        this.chairs = []
+        this.chairs = []    
 
         this.rotation = 0
 
@@ -25,6 +25,7 @@ export default class Ferris {
 
     // Add relative mesh to models
     add (mesh: Mesh) {
+        console.log('ass', mesh)
         if (mesh.userData.name === 'ferris-chair') {
             this.chairModels.push(mesh)
         } else {
@@ -34,6 +35,7 @@ export default class Ferris {
 
     build () {
         this.center = this.bodyModel.position.clone()
+        console.log('ss', this.center)
         this.bodyModel.position.set(0, 0, 0)
         this.main.add(this.bodyModel)
         this.main.position.copy(this.center)
@@ -47,12 +49,15 @@ export default class Ferris {
         this.main.add(chair)
 
         const nums = 12
-        this.chairs.push(chair)
+        this.chairs.push(chair) 
         for (let i = 1; i < nums; i++) {
             const n = chair.clone()
+            n.position.set(0, 0, 0)
             this.main.add(n)
             this.chairs.push(n)
         }
+
+        console.log(this.main.position)
     }
 
     private setChairsPosition () {
