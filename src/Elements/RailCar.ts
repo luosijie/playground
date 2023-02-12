@@ -1,5 +1,4 @@
-import { ArrowHelper, BufferGeometry, CurvePath, Object3D, Line, LineBasicMaterial, LineCurve3, Mesh, Scene, Vector3 } from 'three'
-import { VertexNormalsHelper } from 'three/examples/jsm/helpers/VertexNormalsHelper.js'
+import { BufferGeometry, CurvePath, Object3D, LineCurve3, Mesh, Vector3 } from 'three'
 
 const SPEED = 0.0008
 export default class RailCar {
@@ -20,7 +19,6 @@ export default class RailCar {
     }
 
     addPathLine (geometry: BufferGeometry) {
-        console.log('--', geometry)
         const position = geometry.attributes.position.array
         const nums = 52
         const points = []

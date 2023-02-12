@@ -1,4 +1,4 @@
-import { AxesHelper, Clock, Color, PerspectiveCamera, Points, PointsMaterial, Scene, Vector3, WebGLRenderer } from 'three'
+import { AxesHelper, Clock, Color, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import Background from './Background'
@@ -6,6 +6,7 @@ import Background from './Background'
 import { Config } from '../Types'
 
 import matcapMaterial from '@/materials/matcap'
+import groundShadowMaterial  from '@/materials/groundShadow'
 
 import RailCar from './RailCar'
 import Car from './Car'
@@ -158,6 +159,11 @@ export default class World {
                 e.material = matcapMaterial(resources[`matcap-${data.matcap}`])
             }
 
+            // set shadow
+            if (data['shadow-color']) {
+                e.material = groundShadowMaterial(resources['texture-shadow'], data['shadow-color'])
+            }
+
             // models to dunplicate
             if (this.repeats.contains(data.name)) {
                 this.repeats.add(data.name, e)
@@ -227,14 +233,14 @@ export default class World {
 
     // Update canvas size when window resizing
     updateSize (width: number, height: number) {
-
-        // Update camera        
-        this.updateCamera()
-
-        // Update renderer
+        
         this.width = width
         this.height = height
 
+        // update camera        
+        this.updateCamera()
+        
+        // update renderer
         this.renderer.setSize(width, height)
         
     }

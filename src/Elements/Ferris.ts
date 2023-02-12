@@ -25,10 +25,10 @@ export default class Ferris {
 
     // Add relative mesh to models
     add (mesh: Mesh) {
-        console.log('ass', mesh)
         if (mesh.userData.name === 'ferris-chair') {
             this.chairModels.push(mesh)
-        } else {
+        } 
+        if (mesh.userData.name === 'ferris-rotation') {
             this.bodyModel = mesh
         }
     }
