@@ -71,7 +71,6 @@ export default class Car {
 
     build (model: Group) {
         this.model = model
-        console.log('car-model', model)
 
         this.body = this.createBody()
         this.wheels = this.createWheels()

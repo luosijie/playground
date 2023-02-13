@@ -35,7 +35,6 @@ export default class Ferris {
 
     build () {
         this.center = this.bodyModel.position.clone()
-        console.log('ss', this.center)
         this.bodyModel.position.set(0, 0, 0)
         this.main.add(this.bodyModel)
         this.main.position.copy(this.center)

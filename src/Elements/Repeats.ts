@@ -94,7 +94,6 @@ export default class Repeats {
 
         // carousel-ball
         const carouselBall = this.models['carousel-ball']
-        console.log('carr', carouselBall)
         for (let z = 1; z < 12; z++ ) {
             const n = carouselBall.clone()
             n.rotateZ(Math.PI * 2 / 12 * z)

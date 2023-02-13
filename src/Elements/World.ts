@@ -18,6 +18,8 @@ import DropRotation from './DropRotation'
 import Ferris from './Ferris'
 import DropUp from './DropUp'
 
+import CannonDebugger from 'cannon-es-debugger'
+import setPhysics from '@/functions/setPhysics'
 export default class World {
     isReady: boolean
 
@@ -46,6 +48,8 @@ export default class World {
     ferris: Ferris
     car: Car
 
+    cannonDebugger: any
+
     constructor (config: Config) {
         this.isReady = false
 
@@ -73,6 +77,8 @@ export default class World {
         this.physics = new Physics()
         this.car = new Car(this.physics)
         
+        this.cannonDebugger = CannonDebugger(this.scene, this.physics.world)
+
         this.init()
         
     }
@@ -111,6 +117,8 @@ export default class World {
             this.ferris.update()
             this.railCar.update()
             this.camera.follow(this.car.body.position)
+
+            this.cannonDebugger.update()
             // console.log('ts', this.car.body.position)
         } 
 
@@ -174,6 +182,10 @@ export default class World {
 
             if (data.name.includes('ferris')) {
                 this.ferris.add(e)
+            }
+
+            if (data.physics === 'static') {
+                setPhysics(e, this.physics)
             }
             
         })

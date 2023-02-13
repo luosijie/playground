@@ -36,7 +36,6 @@ export default class Carousel {
 
             // this.main.add(e)
         })
-        console.log('ss', this.main)
         this.main.position.copy(defaultPosition)
     }
 

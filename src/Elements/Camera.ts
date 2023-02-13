@@ -9,9 +9,7 @@ export default class Camera {
     main: PerspectiveCamera
     constructor (width: number, height: number) {
         const camera = new PerspectiveCamera( 40, width / height, 0.1, 1000 )
-        camera.up.z = 1
-        camera.up.x = 0
-        camera.up.y = 0
+        camera.up.set(0, 0, 1)
         // const multiple = 40
         
         // camera.position.copy(cameraPosition.clone().normalize().multiplyScalar(multiple))
