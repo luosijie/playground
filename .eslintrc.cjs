@@ -20,7 +20,7 @@ module.exports = {
     rules: {
         semi: ['error', 'never'],
         quotes: ['error', 'single'],
-        indent: ['error', 4],
+        indent: ['error', 4, { SwitchCase: 1 }],
         '@typescript-eslint/no-explicit-any': 'off',
         'no-control-regex': 0,
         'block-spacing': [2, 'always'],

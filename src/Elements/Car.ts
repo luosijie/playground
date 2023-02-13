@@ -18,7 +18,7 @@ const options = {
         height: 0, // 高度
         offsetWidth: 0.55, // 左右偏移量
         frontOffsetLength: 0.8, // 前轮偏移量
-        backOffsetLength: -0.7, // 后轮偏移量
+        backOffsetLength: 0.7, // 后轮偏移量
         suspensionStiffness: 55, // 悬挂刚度
         suspensionRestLength: 0.5, // 悬挂长度
         frictionSlip: 30, // 滑动摩擦系数
@@ -71,6 +71,7 @@ export default class Car {
 
     build (model: Group) {
         this.model = model
+        console.log('car-model', model)
 
         this.body = this.createBody()
         this.wheels = this.createWheels()
@@ -80,7 +81,7 @@ export default class Car {
 
         this.vehicle = this.createVehicle()
 
-        // this.setControls()
+        this.setControls()
     }
     
     private createBody () {
@@ -146,16 +147,16 @@ export default class Car {
         wheelFR.name = 'wheelFR'
         wheels.add(wheelFR)
 
-        // wheel-back-left
-        const wheelBL = wheelL.clone()
-        wheelBL.name = 'wheelBL'
-        wheels.add(wheelBL)
-
         // wheel-back-right
         const wheelBR = wheelR.clone()
         wheelBR.name = 'wheelBR'
         // wheelBR.position.set(-0.55, -0.5, -0.7)
         wheels.add(wheelBR)
+        
+        // wheel-back-left
+        const wheelBL = wheelL.clone()
+        wheelBL.name = 'wheelBL'
+        wheels.add(wheelBL)
 
         return wheels
     }
@@ -168,12 +169,13 @@ export default class Car {
             if (!modelMesh.name.includes('wheel')) return
             const mesh = modelMesh.clone()
             mesh.position.set(0, 0, 0)
+
+            if (direction === 'right') {
+                mesh.rotateZ(Math.PI)
+            }
             
             wheel.add(mesh)
             
-            if (direction === 'right') {
-                wheel.rotateZ(Math.PI)
-            }
         })
         return wheel
     }
@@ -203,7 +205,8 @@ export default class Car {
         chassisBody.allowSleep = true
         // chassisBody.sleep()
         chassisBody.addShape(chassisShape)
-        chassisBody.position.set(0, 0, 4)
+        // position definded in blender
+        chassisBody.position.set(26.7, -16.8, 1)
         // chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0)
         chassisBody.angularVelocity.set(0, 0, .5)
 
@@ -223,18 +226,22 @@ export default class Car {
 
             const option = { ...this.options.wheel }
             switch (i) {
-            case 0:
-                option.chassisConnectionPointLocal.set(option.offsetWidth, -option.frontOffsetLength, 0)
-                break
-            case 1:
-                option.chassisConnectionPointLocal.set(-option.offsetWidth, -option.frontOffsetLength, 0)
-                break
-            case 2:
-                option.chassisConnectionPointLocal.set(-option.offsetWidth, option.backOffsetLength, 0)
-                break
-            case 3:
-                option.chassisConnectionPointLocal.set(option.offsetWidth, option.backOffsetLength, 0)
-                break
+                case 0:
+                    // front left
+                    option.chassisConnectionPointLocal.set(option.offsetWidth, -option.frontOffsetLength, 0)
+                    break
+                case 1:
+                    // front right
+                    option.chassisConnectionPointLocal.set(-option.offsetWidth, -option.frontOffsetLength, 0)
+                    break
+                case 2:
+                    // back right
+                    option.chassisConnectionPointLocal.set(-option.offsetWidth, option.backOffsetLength, 0)
+                    break
+                case 3:
+                    // back left
+                    option.chassisConnectionPointLocal.set(option.offsetWidth, option.backOffsetLength, 0)
+                    break
             }
             vehicle.addWheel(option)
 
@@ -280,38 +287,38 @@ export default class Car {
 
             switch (event.key) {
             
-            case 'w':
-            case 'ArrowUp': // forward
-                this.vehicle.applyEngineForce(up ? 0 : -maxForce, 2)
-                this.vehicle.applyEngineForce(up ? 0 : -maxForce, 3)
-                break
+                case 'w':
+                case 'ArrowUp': // forward
+                    this.vehicle.applyEngineForce(up ? 0 : -maxForce, 2)
+                    this.vehicle.applyEngineForce(up ? 0 : -maxForce, 3)
+                    break
 
-            case 's':
-            case 'ArrowDown': // backward
-                this.vehicle.applyEngineForce(up ? 0 : maxForce, 2)
-                this.vehicle.applyEngineForce(up ? 0 : maxForce, 3)
-                break
+                case 's':
+                case 'ArrowDown': // backward
+                    this.vehicle.applyEngineForce(up ? 0 : maxForce, 2)
+                    this.vehicle.applyEngineForce(up ? 0 : maxForce, 3)
+                    break
             
-            case 'a':
-            case 'ArrowLeft': // left
-                // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 0)
-                // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 1)
-                this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0)
-                this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1)
-                break
+                case 'a':
+                case 'ArrowLeft': // left
+                    // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 0)
+                    // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 1)
+                    this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0)
+                    this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1)
+                    break
 
-            case 'd':
-            case 'ArrowRight': // right
-                this.vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0)
-                this.vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1)
-                break
+                case 'd':
+                case 'ArrowRight': // right
+                    this.vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 0)
+                    this.vehicle.setSteeringValue(up ? 0 : -maxSteerVal, 1)
+                    break
             
-            case 'b':
-                this.vehicle.setBrake(brakeForce, 0)
-                this.vehicle.setBrake(brakeForce, 1)
-                this.vehicle.setBrake(brakeForce, 2)
-                this.vehicle.setBrake(brakeForce, 3)
-                break
+                case 'b':
+                    this.vehicle.setBrake(brakeForce, 0)
+                    this.vehicle.setBrake(brakeForce, 1)
+                    this.vehicle.setBrake(brakeForce, 2)
+                    this.vehicle.setBrake(brakeForce, 3)
+                    break
 
             }
         }

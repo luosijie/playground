@@ -1,13 +1,12 @@
-import { AxesHelper, Clock, Color, PerspectiveCamera, Scene, Vector3, WebGLRenderer } from 'three'
+import { AxesHelper, Clock, Scene, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-
-import Background from './Background'
 
 import { Config } from '../Types'
 
 import matcapMaterial from '@/materials/matcap'
 import groundShadowMaterial  from '@/materials/groundShadow'
 
+import Camera from './Camera'
 import RailCar from './RailCar'
 import Car from './Car'
 import Physics from './Physics'
@@ -32,7 +31,7 @@ export default class World {
     canvas: HTMLCanvasElement
     renderer: WebGLRenderer
     scene: Scene
-    camera: PerspectiveCamera
+    camera: Camera
 
     physics: Physics
 
@@ -58,8 +57,9 @@ export default class World {
         this.canvas = config.canvas
         this.renderer = this.createRenderer()
         this.scene = new Scene()
-        this.camera = this.createCamera()
-        this.controls = new OrbitControls(this.camera, this.canvas)
+        this.camera = new Camera(this.width, this.height)
+        // this.controls = new OrbitControls(this.camera, this.canvas)
+        // this.controls.enabled = false
         
         this.railCar = new RailCar()
         this.repeats = new Repeats()
@@ -74,14 +74,12 @@ export default class World {
         this.car = new Car(this.physics)
         
         this.init()
-
-        const axesHelper = new AxesHelper(50)
-        this.scene.add(axesHelper)
+        
     }
 
     private init () { 
-        this.updateCamera()
-        this.setBackground()
+        const axesHelper = new AxesHelper(50)
+        this.scene.add(axesHelper)
     }
 
     private createRenderer () {
@@ -98,17 +96,6 @@ export default class World {
         return renderer
     }
 
-    private createCamera () {
-        const camera = new PerspectiveCamera( 40, this.width / this.height, 0.01, 1000 )
-        camera.up.z = 1
-        camera.up.x = 0
-        camera.up.y = 0
-        const multiple = 40
-        
-        camera.position.copy(new Vector3(1.135 * multiple,  -1.45 * multiple, 1.15 * multiple))
-        return camera
-    }
-
     // Passed to renderer.setAnimationLoop
     private render () {
         // const elapsedTime = this.clock.getElapsedTime()
@@ -123,22 +110,13 @@ export default class World {
             this.dropUp.update()
             this.ferris.update()
             this.railCar.update()
+            this.camera.follow(this.car.body.position)
+            // console.log('ts', this.car.body.position)
         } 
 
-        this.controls.update()
-        this.renderer.render( this.scene, this.camera )
-    }
+        // this.controls.update()
+        this.renderer.render( this.scene, this.camera.main )
 
-    private updateCamera () {
-
-        this.camera.aspect = this.width / this.height
-        this.camera.updateProjectionMatrix()
-    }
-
-    private setBackground () {
-        const colors = [ new Color('#de9362'), new Color('#dd9b6a'), new Color('#d79a6f'), new Color('#d9976c') ]
-        const background = new Background(colors)
-        this.scene.add(background.main)
     }
 
     // Build world elements with resources
@@ -146,7 +124,7 @@ export default class World {
 
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
-        const models = modelPlayground.children
+        const models = [...modelPlayground.children, ...modelCarScene.children]
 
         const dataRailPoints = resources['data-rail-points']
         this.railCar.addPathLine(dataRailPoints)
@@ -229,6 +207,7 @@ export default class World {
         this.scene.add(this.car.main)
 
         this.isReady = true
+
     }
 
     // Update canvas size when window resizing
@@ -238,7 +217,7 @@ export default class World {
         this.height = height
 
         // update camera        
-        this.updateCamera()
+        this.camera.updateSize(width, height)
         
         // update renderer
         this.renderer.setSize(width, height)
