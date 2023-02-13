@@ -25,13 +25,13 @@ const options = {
         dampingRelaxation: 2.3, // 悬挂复原阻尼
         dampingCompression: 4.3,
         maxSuspensionForce: 10000,
-        rollInfluence:  0.01, // 施加侧向力时的位置系数, 越小越接近车身, 防止侧翻
+        rollInfluence:  0.1, // 施加侧向力时的位置系数, 越小越接近车身, 防止侧翻
         maxSuspensionTravel: 1,
         customSlidingRotationalSpeed: 30,
         useCustomSlidingRotationalSpeed: true,
-        directionLocal: new CANNON.Vec3(0, 0, -1), // 车轮向下方向
-        axleLocal: new CANNON.Vec3(1, 0, 0), // 车轴方向
-        chassisConnectionPointLocal: new CANNON.Vec3(0, 0, 0), // 车轮连接点
+        directionLocal: new Vec3(0, 0, -1), // 车轮向下方向
+        axleLocal: new Vec3(1, 0, 0), // 车轴方向
+        chassisConnectionPointLocal: new Vec3(0, 0, 0), // 车轮连接点
     },
     control: {
         maxSteerVal: 0.5,
@@ -62,11 +62,6 @@ export default class Car {
 
         this.main = new Group()
         
-        // this.setWheels()
-        // this.shadow = this.createShadow()
-        // this.private setVehicle()
-
-        // this.init()
     }
 
     build (model: Group) {
@@ -122,8 +117,8 @@ export default class Car {
 
         // update chassis config to correct size
         this.options.chassis.width = size.x / 2
-        this.options.chassis.height = size.y / 2
-        this.options.chassis.length = size.z / 2
+        this.options.chassis.length = size.y / 2
+        this.options.chassis.height = size.z / 2
 
         return body
     }
@@ -145,17 +140,17 @@ export default class Car {
         const wheelFR = wheelR.clone()
         wheelFR.name = 'wheelFR'
         wheels.add(wheelFR)
+        
+        // wheel-back-left
+        const wheelBL = wheelL.clone()
+        wheelBL.name = 'wheelBL'
+        wheels.add(wheelBL)
 
         // wheel-back-right
         const wheelBR = wheelR.clone()
         wheelBR.name = 'wheelBR'
         // wheelBR.position.set(-0.55, -0.5, -0.7)
         wheels.add(wheelBR)
-        
-        // wheel-back-left
-        const wheelBL = wheelL.clone()
-        wheelBL.name = 'wheelBL'
-        wheels.add(wheelBL)
 
         return wheels
     }
@@ -197,15 +192,15 @@ export default class Car {
         this.physicsBodys = {}
 
         const chassisShape = new Box(
-            new Vec3(this.options.chassis.width, this.options.chassis.height, this.options.chassis.length)
+            new Vec3(this.options.chassis.width, this.options.chassis.length, this.options.chassis.height)
         )
         
         const chassisBody = new Body({ mass: this.options.chassis.mass })
-        chassisBody.allowSleep = true
-        // chassisBody.sleep()
+        chassisBody.allowSleep = false
+        chassisBody.sleep()
         chassisBody.addShape(chassisShape)
         // position definded in blender
-        chassisBody.position.set(26.7, -16.8, 1)
+        chassisBody.position.set(26.7, -16.8, 10)
         // chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0)
         chassisBody.angularVelocity.set(0, 0, .5)
 
@@ -234,29 +229,30 @@ export default class Car {
                     option.chassisConnectionPointLocal.set(-option.offsetWidth, -option.frontOffsetLength, 0)
                     break
                 case 2:
-                    // back right
-                    option.chassisConnectionPointLocal.set(-option.offsetWidth, option.backOffsetLength, 0)
-                    break
-                case 3:
                     // back left
                     option.chassisConnectionPointLocal.set(option.offsetWidth, option.backOffsetLength, 0)
+                    break
+                case 3:
+                    // back right
+                    option.chassisConnectionPointLocal.set(-option.offsetWidth, option.backOffsetLength, 0)
                     break
             }
             vehicle.addWheel(option)
 
             const radius = option.radius
             const width = option.width
-            const wheelShape = new Cylinder(radius, radius, width, 20)
-            const wheelBody = new Body({ mass: 0, material: this.physics.materials.wheel })
-            wheelBody.type = Body.KINEMATIC
-            wheelBody.collisionFilterGroup = 0
+            const wheelShape = new Cylinder(radius, radius, width, 30)
+            const wheelBody = new Body({ mass: 5, material: this.physics.materials.wheel })
             
             const wheelQuaternion = new Quaternion()
             wheelQuaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2)   
-            wheelBody.addShape(wheelShape, new Vec3(), wheelQuaternion)  
+            wheelBody.addShape(wheelShape, new Vec3(), wheelQuaternion) 
+             
+            wheelBody.type = Body.KINEMATIC
+            // wheelBody.collisionFilterGroup = 0
 
             this.physicsBodys['wheels'][i] = wheelBody
-            this.physics.world.addBody(wheelBody)
+            // this.physics.world.addBody(wheelBody)
         } 
 
         vehicle.addToWorld(this.physics.world)

@@ -1,5 +1,5 @@
 import Physics from '@/Elements/Physics'
-import { Body, Box, Vec3 } from 'cannon-es'
+import { Body, Box, Cylinder, Vec3 } from 'cannon-es'
 import { Box3, Mesh} from 'three'
 
 export default function (mesh: Mesh, physics: Physics) {
@@ -16,8 +16,8 @@ export default function (mesh: Mesh, physics: Physics) {
     )
 
     const shape = new Box(size)
-    const boxBody = new Body({ type: Body.STATIC, mass: 1, shape, material: physics.materials.static })
+    const boxBody = new Body({ type: Body.DYNAMIC, mass: 1, shape, material: physics.materials.static })
     boxBody.position.copy(center)
     physics.world.addBody(boxBody)
-    console.log('set-physics', box)
+
 }

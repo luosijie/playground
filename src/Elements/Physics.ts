@@ -20,6 +20,7 @@ export default class Physics {
         const world = new World()
         world.gravity.set(0, 0, -9.82)
         world.broadphase = new SAPBroadphase(world)
+        world.allowSleep = true
         world.defaultContactMaterial.friction = 0
 
         return world
@@ -32,31 +33,31 @@ export default class Physics {
             static: new Material('static')
         }
 
-        const contactWheelGround = new ContactMaterial(
-            materials.wheel, 
+        const contactGroundWheel = new ContactMaterial(
             materials.ground,
+            materials.wheel, 
             {
                 friction: .5,
                 restitution: 0,
                 contactEquationStiffness: 1000
             }
         )
-        this.world.addContactMaterial(contactWheelGround)
+        this.world.addContactMaterial(contactGroundWheel)
 
-        const contactStaticGround = new ContactMaterial(
-            materials.static, 
+        const contactGroundStatic = new ContactMaterial(
             materials.ground,
+            materials.static, 
             {
                 friction: .05,
                 restitution: 0.3,
                 contactEquationStiffness: 1000
             }
         )
-        this.world.addContactMaterial(contactStaticGround)
+        this.world.addContactMaterial(contactGroundStatic)
 
         const contactStatics = new ContactMaterial(
+            materials.static,
             materials.static, 
-            materials.wheel,
             {
                 friction: .5,
                 restitution: 0.3,
