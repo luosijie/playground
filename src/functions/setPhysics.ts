@@ -16,8 +16,11 @@ export default function (mesh: Mesh, physics: Physics) {
     )
 
     const shape = new Box(size)
-    const boxBody = new Body({ type: Body.DYNAMIC, mass: 1, shape, material: physics.materials.static })
+    const boxBody = new Body({ mass: 0, shape, material: physics.materials.static })
+    boxBody.allowSleep = true
+    boxBody.sleepSpeedLimit = .01
     boxBody.position.copy(center)
+    // boxBody.sleep()
     physics.world.addBody(boxBody)
 
 }

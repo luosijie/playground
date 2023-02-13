@@ -242,7 +242,7 @@ export default class Car {
             const radius = option.radius
             const width = option.width
             const wheelShape = new Cylinder(radius, radius, width, 30)
-            const wheelBody = new Body({ mass: 5, material: this.physics.materials.wheel })
+            const wheelBody = new Body({ mass: 20, material: this.physics.materials.wheel })
             
             const wheelQuaternion = new Quaternion()
             wheelQuaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2)   
