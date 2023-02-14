@@ -1,7 +1,6 @@
 import { Group, Mesh, Box3 } from 'three'
 // import Shadow from './Shadow'
 
-import * as CANNON from 'cannon-es'
 import { Body, Box, Cylinder, Quaternion, RaycastVehicle, Vec3 } from 'cannon-es'
 import Physics from './Physics'
 
@@ -25,7 +24,7 @@ const options = {
         dampingRelaxation: 2.3, // 悬挂复原阻尼
         dampingCompression: 4.3,
         maxSuspensionForce: 10000,
-        rollInfluence:  0.1, // 施加侧向力时的位置系数, 越小越接近车身, 防止侧翻
+        rollInfluence:  0.01, // 施加侧向力时的位置系数, 越小越接近车身, 防止侧翻
         maxSuspensionTravel: 1,
         customSlidingRotationalSpeed: 30,
         useCustomSlidingRotationalSpeed: true,
@@ -196,8 +195,8 @@ export default class Car {
         )
         
         const chassisBody = new Body({ mass: this.options.chassis.mass })
-        chassisBody.allowSleep = false
-        chassisBody.sleep()
+        chassisBody.allowSleep = true
+        // chassisBody.sleep()
         chassisBody.addShape(chassisShape)
         // position definded in blender
         chassisBody.position.set(26.7, -16.8, 10)
@@ -242,17 +241,17 @@ export default class Car {
             const radius = option.radius
             const width = option.width
             const wheelShape = new Cylinder(radius, radius, width, 30)
-            const wheelBody = new Body({ mass: 20, material: this.physics.materials.wheel })
+            const wheelBody = new Body({ mass: 20, material: this.physics.materials.wheel, collisionFilterGroup: 2, collisionFilterMask: 3 })
             
             const wheelQuaternion = new Quaternion()
             wheelQuaternion.setFromAxisAngle(new Vec3(0, 0, 1), Math.PI / 2)   
             wheelBody.addShape(wheelShape, new Vec3(), wheelQuaternion) 
              
             wheelBody.type = Body.KINEMATIC
-            // wheelBody.collisionFilterGroup = 0
+            wheelBody.collisionFilterGroup = 0
 
             this.physicsBodys['wheels'][i] = wheelBody
-            // this.physics.world.addBody(wheelBody)
+            this.physics.world.addBody(wheelBody)
         } 
 
         vehicle.addToWorld(this.physics.world)

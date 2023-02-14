@@ -12,7 +12,6 @@ const colors: any = {
 
 export default function (texture: Texture, colorName: string) {
     const color = colors[colorName]
-    console.log(colorName, color)
 
     return new ShaderMaterial({
         vertexShader,

@@ -20,6 +20,7 @@ import DropUp from './DropUp'
 
 import CannonDebugger from 'cannon-es-debugger'
 import setPhysics from '@/functions/setPhysics'
+import Shields from './Shields'
 export default class World {
     isReady: boolean
 
@@ -47,6 +48,7 @@ export default class World {
     dropUp: DropUp
     ferris: Ferris
     car: Car
+    shields: Shields
 
     cannonDebugger: any
 
@@ -76,6 +78,8 @@ export default class World {
 
         this.physics = new Physics()
         this.car = new Car(this.physics)
+
+        this.shields = new Shields(this.physics)
         
         this.cannonDebugger = CannonDebugger(this.scene, this.physics.world)
 
@@ -129,9 +133,11 @@ export default class World {
 
     // Build world elements with resources
     build (resources: any) {
+        console.log('resources', resources)
 
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
+
         const models = [...modelPlayground.children, ...modelCarScene.children]
 
         const dataRailPoints = resources['data-rail-points']
@@ -187,9 +193,12 @@ export default class World {
             if (data.physics === 'static') {
                 setPhysics(e, this.physics)
             }
+
+            if (data.name === 'area') {
+                this.shields.add(e)
+            }
             
         })
-
         this.scene.add(modelPlayground)
 
         this.repeats.build()
@@ -210,6 +219,8 @@ export default class World {
         this.ferris.build()
         this.scene.add(this.ferris.main)
 
+        this.scene.add(this.shields.main)
+
         // init rail car
         this.railCar.build()
         this.scene.add(this.railCar.main)
@@ -219,6 +230,8 @@ export default class World {
         this.scene.add(this.car.main)
 
         this.isReady = true
+
+        console.log('ssscene', this.scene)
 
     }
 

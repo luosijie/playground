@@ -2,7 +2,7 @@ import { PerspectiveCamera, Vector3 } from 'three'
 
 // Define the relative position of the car
 // const cameraPosition = new Vector3(81.8107, -68.4092, 96.8815).normalize()
-const cameraPosition = new Vector3(81.8107, -68.4092, 30.8815).normalize()
+const cameraPosition = new Vector3(81.8107, -68.4092, 90.8815).normalize()
 
 export default class Camera {
     width: number
