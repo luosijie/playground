@@ -83,10 +83,10 @@ export default class Repeats {
             this.main.add(n)
         }
 
-        // car-station-fan
+        // car-station-sylinder
         const statiopnSylinder = this.models['station-sylinder']
-        const statiopnSylinderGap = 2.7
-        const statiopnSylinderNum = 4
+        const statiopnSylinderGap = 4.0
+        const statiopnSylinderNum = 3
         for (let x = 1; x < statiopnSylinderNum; x++) {
             const n = statiopnSylinder.clone().translateX(x * statiopnSylinderGap)
             this.main.add(n)
@@ -187,7 +187,7 @@ export default class Repeats {
             this.main.add(n)
         }
 
-        // sheep
+        // chicken
         const chicken = this.models['chicken']
         const chickenMat = [
             new Vector4(15.0235, 11.1775, 0.505387, degToRand(61.509)),

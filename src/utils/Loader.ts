@@ -122,20 +122,20 @@ export default class Loader {
         let loader: GLTFLoader | FBXLoader | TextureLoader | PLYLoader = this.textureLoader
 
         switch (type) {
-        case LoaderType.GLTF:
-            loader = this.gltfLoader
-            break
-        case LoaderType.FBX:
-            loader = this.fbxLoader
-            break
-        case LoaderType.Texture:
-            loader = this.textureLoader
-            break
-        case LoaderType.PLY:
-            loader = this.plyLoader
-            break
-        default:
-            loader = this.textureLoader
+            case LoaderType.GLTF:
+                loader = this.gltfLoader
+                break
+            case LoaderType.FBX:
+                loader = this.fbxLoader
+                break
+            case LoaderType.Texture:
+                loader = this.textureLoader
+                break
+            case LoaderType.PLY:
+                loader = this.plyLoader
+                break
+            default:
+                loader = this.textureLoader
         }
 
         loader.load(

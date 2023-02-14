@@ -19,9 +19,13 @@ import Ferris from './Ferris'
 import DropUp from './DropUp'
 
 import CannonDebugger from 'cannon-es-debugger'
-import setPhysics from '@/functions/setPhysics'
+import setPhysics from '@/utils/setPhysics'
 import Shields from './Shields'
+import checkDev from '@/utils/checkDev'
+import Trees from './Trees'
+
 export default class World {
+    isDev: boolean
     isReady: boolean
 
     width: number
@@ -48,11 +52,14 @@ export default class World {
     dropUp: DropUp
     ferris: Ferris
     car: Car
+
     shields: Shields
+    trees: Trees
 
     cannonDebugger: any
 
     constructor (config: Config) {
+        this.isDev = checkDev()
         this.isReady = false
 
         this.width = config.width
@@ -64,8 +71,8 @@ export default class World {
         this.renderer = this.createRenderer()
         this.scene = new Scene()
         this.camera = new Camera(this.width, this.height)
-        // this.controls = new OrbitControls(this.camera, this.canvas)
-        // this.controls.enabled = false
+        this.controls = new OrbitControls(this.camera.main, this.canvas)
+        this.controls.enabled = false
         
         this.railCar = new RailCar()
         this.repeats = new Repeats()
@@ -77,9 +84,9 @@ export default class World {
         this.ferris = new Ferris()
 
         this.physics = new Physics()
-        this.car = new Car(this.physics)
-
         this.shields = new Shields(this.physics)
+        this.trees = new Trees(this.physics)
+        this.car = new Car(this.physics)
         
         this.cannonDebugger = CannonDebugger(this.scene, this.physics.world)
 
@@ -88,8 +95,11 @@ export default class World {
     }
 
     private init () { 
-        const axesHelper = new AxesHelper(50)
-        this.scene.add(axesHelper)
+        if (this.isDev) {
+            this.controls.enabled = true
+            const axesHelper = new AxesHelper(50)
+            this.scene.add(axesHelper)
+        }
     }
 
     private createRenderer () {
@@ -120,10 +130,13 @@ export default class World {
             this.dropUp.update()
             this.ferris.update()
             this.railCar.update()
-            this.camera.follow(this.car.body.position)
-
-            this.cannonDebugger.update()
-            // console.log('ts', this.car.body.position)
+            
+            if (this.isDev) {
+                this.cannonDebugger.update()
+                this.controls.update()
+            } else {
+                this.camera.follow(this.car.body.position)
+            }
         } 
 
         // this.controls.update()
@@ -197,6 +210,10 @@ export default class World {
             if (data.name === 'area') {
                 this.shields.add(e)
             }
+
+            if (data.name.includes('tree-')) {
+                this.trees.add(e)
+            }
             
         })
         this.scene.add(modelPlayground)
@@ -228,6 +245,9 @@ export default class World {
         // init car
         this.car.build(modelCarScene)
         this.scene.add(this.car.main)
+
+        this.trees.build()
+        this.scene.add(this.trees.main)
 
         this.isReady = true
 
