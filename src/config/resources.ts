@@ -3,6 +3,7 @@ export default [
     { name: 'data-rail-points', type: LoaderType.PLY, path: '/models/rail-points.ply'},
     { name: 'texture-shadow', type: LoaderType.Texture, path: '/textures/shadows.jpg'},
     { name: 'model-playground', type: LoaderType.GLTF, path: '/models/playground.glb'},
+    { name: 'model-bricks', type: LoaderType.GLTF, path: '/models/bricks.glb'},
     { name: 'model-car', type: LoaderType.GLTF, path: '/models/car.glb'},
     { name: 'model-physics-static', type: LoaderType.GLTF, path: '/models/physics-static.glb'},
     { name: 'matcap-black', type: LoaderType.Texture, path: '/matcaps/black.png'},

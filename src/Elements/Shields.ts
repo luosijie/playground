@@ -1,6 +1,6 @@
-import { Group, Mesh, Vector2, Vector3, Shape, ExtrudeGeometry, MeshBasicMaterial } from 'three'
+import { Group, Mesh, Vector3, Shape, ExtrudeGeometry, MeshBasicMaterial } from 'three'
 import Physics from './Physics'
-import setPhysics from '@/utils/setPhysics'
+import createPhysics from '@/utils/createPhysics'
 import { SHAPE_TYPES } from 'cannon-es'
 
 export default class Shield {
@@ -50,13 +50,13 @@ export default class Shield {
         const mesh = this.createMesh(modelMesh)
         this.main.add (mesh)
 
-        setPhysics(mesh, this.physics, SHAPE_TYPES.BOX)
+        createPhysics({ mesh, physics: this.physics, shapeType: SHAPE_TYPES.BOX, mass: 0 })
     }
 
     build (scene: any) {
         const meshs = scene.children
         meshs.forEach((e: Mesh) => {
-            setPhysics(e, this.physics)
+            createPhysics({ mesh: e, physics: this.physics, shapeType: SHAPE_TYPES.BOX, mass: 0 })
         })
     }
 

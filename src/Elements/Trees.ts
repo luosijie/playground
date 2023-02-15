@@ -1,9 +1,12 @@
 import { Group, Mesh, Vector3 } from 'three'
 import Physics from './Physics'
-import setPhysics from '@/utils/setPhysics'
+import createPhysics from '@/utils/createPhysics'
 import { SHAPE_TYPES } from 'cannon-es'
 
 const defaultTrees = [
+    new Vector3(18.4949, -21.9102, 0),
+    new Vector3(19.6496, -21.9102, 0),
+
     new Vector3(4.15384, -24.487, 0),
     new Vector3(21.1227, -21.0812, 0),
     new Vector3(22.1645, -23.562, 0),
@@ -39,7 +42,7 @@ export default class Trees {
         tree.position.copy(position)
         tree.scale.set(scale, scale, scale)
 
-        setPhysics(tree, this.physics, SHAPE_TYPES.CYLINDER)
+        createPhysics({ mesh: tree, physics: this.physics, shapeType: SHAPE_TYPES.CYLINDER, mass: 0 })
 
         return tree
     }

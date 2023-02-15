@@ -19,10 +19,12 @@ import Ferris from './Ferris'
 import DropUp from './DropUp'
 
 import CannonDebugger from 'cannon-es-debugger'
-import setPhysics from '@/utils/setPhysics'
+import createPhysics from '@/utils/createPhysics'
 import Shields from './Shields'
 import checkDev from '@/utils/checkDev'
 import Trees from './Trees'
+import Bricks from './Bricks'
+import { SHAPE_TYPES } from 'cannon-es'
 
 export default class World {
     isDev: boolean
@@ -55,6 +57,7 @@ export default class World {
 
     shields: Shields
     trees: Trees
+    bricks: Bricks
 
     cannonDebugger: any
 
@@ -87,6 +90,7 @@ export default class World {
         this.shields = new Shields(this.physics)
         this.trees = new Trees(this.physics)
         this.car = new Car(this.physics)
+        this.bricks = new Bricks(this.physics)
         
         this.cannonDebugger = CannonDebugger(this.scene, this.physics.world)
 
@@ -151,11 +155,10 @@ export default class World {
         const modelPlayground = resources['model-playground'].scene
         const modelCarScene = resources['model-car'].scene
 
-        const models = [...modelPlayground.children, ...modelCarScene.children]
-
         const dataRailPoints = resources['data-rail-points']
         this.railCar.addPathLine(dataRailPoints)
 
+        const models = [...modelPlayground.children, ...modelCarScene.children]
         models.forEach((e: any) => {
             const data = e.userData
 
@@ -204,7 +207,7 @@ export default class World {
             }
 
             if (data.physics === 'static') {
-                setPhysics(e, this.physics)
+                createPhysics({ mesh: e, physics: this.physics, mass: 0, shapeType: SHAPE_TYPES.BOX })
             }
 
             if (data.name === 'area') {
@@ -249,9 +252,10 @@ export default class World {
         this.trees.build()
         this.scene.add(this.trees.main)
 
-        this.isReady = true
+        this.bricks.build(resources)
+        this.scene.add(this.bricks.main)
 
-        console.log('ssscene', this.scene)
+        this.isReady = true
 
     }
 

@@ -3,7 +3,7 @@ import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World } from 'ca
 interface Materials {
     ground: Material
     wheel: Material
-    static: Material
+    default: Material
 }
 
 export default class Physics {
@@ -30,7 +30,7 @@ export default class Physics {
         const materials = {
             ground: new Material('ground'),
             wheel: new Material('wheel'),
-            static: new Material('static')
+            default: new Material('default')
         }
 
         const contactGroundWheel = new ContactMaterial(
@@ -44,20 +44,20 @@ export default class Physics {
         )
         this.world.addContactMaterial(contactGroundWheel)
 
-        const contactGroundStatic = new ContactMaterial(
+        const contactGroundDefault = new ContactMaterial(
             materials.ground,
-            materials.static, 
+            materials.default, 
             {
                 friction: .05,
                 restitution: 0.3,
                 contactEquationStiffness: 1000
             }
         )
-        this.world.addContactMaterial(contactGroundStatic)
+        this.world.addContactMaterial(contactGroundDefault)
 
         const contactStatics = new ContactMaterial(
-            materials.static,
-            materials.static, 
+            materials.default,
+            materials.default, 
             {
                 friction: .5,
                 restitution: 0.3,
