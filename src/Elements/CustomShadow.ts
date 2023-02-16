@@ -39,7 +39,7 @@ export default class CustomShadow {
                 }
             }
         })
-        const geometry = new PlaneGeometry(1.2, 1.2, 2, 2)
+        const geometry = new PlaneGeometry(1.4, 1.4, 2, 2)
         this.main = new Mesh(geometry, this.material)
 
     }
@@ -62,7 +62,7 @@ export default class CustomShadow {
         position.x += .1
         position.y += .1
         this.main.position.copy(position)
-        this.main.position.z = 0.01
+        this.main.position.z = 0.02
 
         // set rotation
         const rotationVector = new Vector3(1, 0, 0)

@@ -19,12 +19,11 @@ import Ferris from './Ferris'
 import DropUp from './DropUp'
 
 import CannonDebugger from 'cannon-es-debugger'
-import createPhysics from '@/utils/createPhysics'
 import Shields from './Shields'
 import checkDev from '@/utils/checkDev'
 import Trees from './Trees'
 import Bricks from './Bricks'
-import { SHAPE_TYPES, Vec3 } from 'cannon-es'
+import { SHAPE_TYPES } from 'cannon-es'
 
 export default class World {
     isDev: boolean
@@ -138,6 +137,7 @@ export default class World {
             this.dropUp.update()
             this.ferris.update()
             this.railCar.update()
+            this.bricks.update()
             
             if (this.isDev) {
                 this.cannonDebugger.update()
@@ -215,7 +215,7 @@ export default class World {
             }
 
             if (data.physics === 'static') {
-                createPhysics({ mesh: e, physics: this.physics, mass: 0, shapeType: SHAPE_TYPES.BOX })
+                this.physics.createBody({ mesh: e, mass: 0, shapeType: SHAPE_TYPES.BOX })
             }
 
             if (data.name === 'area') {

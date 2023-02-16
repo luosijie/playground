@@ -1,6 +1,5 @@
 import { Group, Mesh, Vector3 } from 'three'
 import Physics from './Physics'
-import createPhysics from '@/utils/createPhysics'
 import { SHAPE_TYPES } from 'cannon-es'
 import CustomShadow, { CustomShadowType } from './CustomShadow'
 
@@ -43,7 +42,7 @@ export default class Trees {
         tree.position.copy(position)
         tree.scale.set(scale, scale, scale)
         
-        createPhysics({ mesh: tree, physics: this.physics, shapeType: SHAPE_TYPES.CYLINDER, mass: 0 })
+        this.physics.createBody({ mesh: tree, shapeType: SHAPE_TYPES.CYLINDER, mass: 0 })
 
         const shadow = new CustomShadow(CustomShadowType.circle)
         shadow.build(tree)

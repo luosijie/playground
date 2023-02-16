@@ -1,24 +1,33 @@
 import { Group, Mesh, Vector3 } from 'three'
 import Physics from './Physics'
-import createPhysics from '@/utils/createPhysics'
 import { SHAPE_TYPES } from 'cannon-es'
 import matcapMaterial from '@/materials/matcap'
+import { Body } from 'cannon-es'
+import CustomShadow from './CustomShadow'
 
 const colors = [ 'blue', 'red', 'yellow', 'red', 'brown' ]
 
 export default class Bricks {
     models: Array<Mesh>
-    physics: Physics
-    main: Group
 
-    rotation: number
-    tl: GSAPTimeline
+    physics: Physics
+
+    main: Group
+    meshes: Array<Mesh>
+    shadows: Array<CustomShadow>
+
+    physicsBodies: Array<Body>
+
     constructor (physics: Physics) {
         this.physics = physics
 
         this.models = []
 
         this.main = new Group()
+        this.shadows = []
+        this.meshes = []
+
+        this.physicsBodies = []
 
     }
 
@@ -32,8 +41,6 @@ export default class Bricks {
 
         // brick.material = matcap()
 
-        createPhysics({ mesh: brick, physics: this.physics, shapeType: SHAPE_TYPES.BOX, mass: 100 })
-
         return brick
     }
 
@@ -42,8 +49,8 @@ export default class Bricks {
         this.models.push(...modelBricks.children)
       
         // set random trees
-        const min = 25
-        const max = 80
+        const min = 30
+        const max = 60
         const nums = 30
 
         for (let i = 0; i < nums; i++) {
@@ -54,20 +61,36 @@ export default class Bricks {
             const position = new Vector3(
                 Math.cos(angle) * distance,
                 Math.sin(angle) * distance,
-                0
+                10
             )
             const brick = this.createBrick(position)
             const color = colors[Math.round(Math.random() * 3)]
             brick.material = matcapMaterial(resources[`matcap-${color}`])
+            this.meshes.push(brick)
             this.main.add(brick)
+
+            const brickPhysics = this.physics.createBody({ mesh: brick, shapeType: SHAPE_TYPES.BOX, mass: 10 })
+            this.physicsBodies.push(brickPhysics)
+
+            const shadow = new CustomShadow()
+            shadow.build(brick)
+            this.shadows.push(shadow)
+            this.main.add(shadow.main)
         }
 
+        // destroy original models
         this.models.forEach(e => {
             e.parent?.remove(e)
         })
     }
 
     update () {
-        this.main.rotation.y = this.rotation
+        this.physicsBodies.forEach((e: Body, i: number) => {
+            const mesh = this.meshes[i]
+            mesh.position.set(e.position.x, e.position.y, e.position.z)
+            mesh.quaternion.set(e.quaternion.x, e.quaternion.y, e.quaternion.z, e.quaternion.w)
+
+            this.shadows[i].update()
+        })
     }
 }
