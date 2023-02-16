@@ -111,6 +111,11 @@ export default class World {
         renderer.setSize( this.width, this.height)
         renderer.setAnimationLoop( this.render.bind(this) )
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        
+        // renderer.physicallyCorrectLights = true
+        // renderer.gammaFactor = 2.2
+        // renderer.gammaOutPut = true
+        renderer.autoClear = false
 
         // renderer.outputEncoding = sRGBEncoding
         return renderer
@@ -167,6 +172,10 @@ export default class World {
             // set shadow
             if (data['shadow-color']) {
                 e.material = groundShadowMaterial(resources['texture-shadow'], data['shadow-color'])
+            }
+
+            if (data.name === 'sun') {
+                console.log('data', e)
             }
 
             // models to dunplicate

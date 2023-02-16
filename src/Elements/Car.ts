@@ -3,6 +3,7 @@ import { Group, Mesh, Box3 } from 'three'
 
 import { Body, Box, Cylinder, Quaternion, RaycastVehicle, Vec3 } from 'cannon-es'
 import Physics from './Physics'
+import CustomShadow from './CustomShadow'
 
 const options = {
     chassis: {
@@ -47,7 +48,7 @@ export default class Car {
     main: Group
     body: Group
     wheels: Group
-    shadow: Mesh
+    shadow: CustomShadow
     
     physicsBodys: any
     vehicle: RaycastVehicle
@@ -60,6 +61,8 @@ export default class Car {
         this.options = options
 
         this.main = new Group()
+
+        this.shadow = new CustomShadow()
         
     }
 
@@ -68,9 +71,13 @@ export default class Car {
 
         this.body = this.createBody()
         this.wheels = this.createWheels()
+        this.shadow.build(this.body)
 
         this.main.add(this.body)
         this.main.add(this.wheels)
+        this.main.add(this.shadow.main)
+
+        this.shadow.build(this.body)
 
         this.vehicle = this.createVehicle()
 
@@ -342,6 +349,8 @@ export default class Car {
             this.wheels.children[i].position.copy(wheelBody.position)
             this.wheels.children[i].quaternion.copy(wheelBody.quaternion)
         }
+
+        this.shadow.update()
     }
 
     destroy () {
