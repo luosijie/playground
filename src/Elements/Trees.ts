@@ -2,6 +2,7 @@ import { Group, Mesh, Vector3 } from 'three'
 import Physics from './Physics'
 import createPhysics from '@/utils/createPhysics'
 import { SHAPE_TYPES } from 'cannon-es'
+import CustomShadow, { CustomShadowType } from './CustomShadow'
 
 const defaultTrees = [
     new Vector3(18.4949, -21.9102, 0),
@@ -41,8 +42,12 @@ export default class Trees {
         const tree = this.models[index].clone()
         tree.position.copy(position)
         tree.scale.set(scale, scale, scale)
-
+        
         createPhysics({ mesh: tree, physics: this.physics, shapeType: SHAPE_TYPES.CYLINDER, mass: 0 })
+
+        const shadow = new CustomShadow(CustomShadowType.circle)
+        shadow.build(tree)
+        this.main.add(shadow.main)
 
         return tree
     }
@@ -84,9 +89,5 @@ export default class Trees {
         this.models.forEach(e => {
             e.parent?.remove(e)
         })
-    }
-
-    update () {
-        this.main.rotation.y = this.rotation
     }
 }

@@ -1,54 +1,80 @@
-import { Mesh, Object3D, PlaneGeometry, ShaderMaterial, Vector3, Color } from 'three'
+import { Mesh, Object3D, PlaneGeometry, ShaderMaterial, Vector3, Color, Box3, CircleGeometry, Vector2 } from 'three'
 
 import vertexShader from '@/shaders/custom-shadow/vertex.glsl'
 import fragmentShader from '@/shaders/custom-shadow/fragment.glsl'
+
+export enum CustomShadowType  {
+    box = 'box',
+    circle = 'circle'
+}
 
 export default class CustomShadow {
     source: Object3D
 
     main: Mesh
+    material: ShaderMaterial
+
     rotation: number
-    constructor () {
+
+    type: CustomShadowType
+    constructor (type: CustomShadowType = CustomShadowType.box) {
+        this.type = type
+
         this.source = new Object3D()
 
-        this.main = this.createShadow(new Color('#692c02'))
-        this.rotation = 0
-
-        const v = new Vector3(1, 1, 1)
-        v.projectOnPlane(new Vector3(0, 0, 1))
-        console.log('v', v)
-    }
-
-    private createShadow (color: Color) {
-        const geometry = new PlaneGeometry(10, 10, 2, 2)
-        const material = new ShaderMaterial({
+        this.material = new ShaderMaterial({
             vertexShader,
             fragmentShader,
             transparent: true,
             uniforms: {
+                uType: {
+                    value: this.type === CustomShadowType.box ? 0. : 1. 
+                },
+
                 uColor: {
-                    value: color
+                    value: new Color('#692c02')
+                },
+                uOpacity: {
+                    value: 0.
                 }
             }
         })
-        return new Mesh(geometry, material)
+        const geometry = new PlaneGeometry(1.2, 1.2, 2, 2)
+        this.main = new Mesh(geometry, this.material)
+
     }
 
     build (source: Object3D) {
         this.source = source
+
+        const box = new Box3().setFromObject(this.source)
+        const scaleX = box.max.x - box.min.x
+        const scaleY = box.max.y - box.min.y
+        
+        this.main.scale.set(scaleX, scaleY, 1)
+
+        this.update()
     }
 
     update () {
-        this.main.position.copy(this.source.position)
+        // set position
+        const position = this.source.position.clone()
+        position.x += .1
+        position.y += .1
+        this.main.position.copy(position)
+        this.main.position.z = 0.01
 
+        // set rotation
         const rotationVector = new Vector3(1, 0, 0)
         rotationVector.applyQuaternion(this.source.quaternion)
         rotationVector.projectOnPlane(new Vector3(0, 0, 1))
-
         const angle = Math.atan2(rotationVector.y, rotationVector.x)
-
-        // rotationVector.
-        this.main.position.z = 0.01
         this.main.rotation.z = angle
+
+        // set opacity
+        let height = this.source.position.z
+        height = height > 10 ? 10 : height
+        const opacity = 1.0 - height / 10
+        this.material.uniforms.uOpacity.value = opacity
     }
 }

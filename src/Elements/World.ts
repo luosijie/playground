@@ -1,4 +1,4 @@
-import { AxesHelper, Clock, Scene, WebGLRenderer } from 'three'
+import { AxesHelper, Clock, Scene, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import { Config } from '../Types'
@@ -24,7 +24,7 @@ import Shields from './Shields'
 import checkDev from '@/utils/checkDev'
 import Trees from './Trees'
 import Bricks from './Bricks'
-import { SHAPE_TYPES } from 'cannon-es'
+import { SHAPE_TYPES, Vec3 } from 'cannon-es'
 
 export default class World {
     isDev: boolean
@@ -43,6 +43,8 @@ export default class World {
     camera: Camera
 
     physics: Physics
+
+    sun: Vector3
 
     // Elements in world
     repeats: Repeats
@@ -77,6 +79,8 @@ export default class World {
         this.controls = new OrbitControls(this.camera.main, this.canvas)
         this.controls.enabled = false
         
+        this.sun = new Vector3(-15.5866, -21.5806, 16.9775)
+    
         this.railCar = new RailCar()
         this.repeats = new Repeats()
         this.windmill = new Windmill()
@@ -115,11 +119,6 @@ export default class World {
         renderer.setSize( this.width, this.height)
         renderer.setAnimationLoop( this.render.bind(this) )
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-        
-        // renderer.physicallyCorrectLights = true
-        // renderer.gammaFactor = 2.2
-        // renderer.gammaOutPut = true
-        renderer.autoClear = false
 
         // renderer.outputEncoding = sRGBEncoding
         return renderer
