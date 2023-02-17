@@ -25,6 +25,9 @@ import Trees from './Trees'
 import Bricks from './Bricks'
 import { SHAPE_TYPES } from 'cannon-es'
 
+import { Howl } from 'howler'
+import Sounds from './Sounds'
+
 export default class World {
     isDev: boolean
     isReady: boolean
@@ -42,6 +45,7 @@ export default class World {
     camera: Camera
 
     physics: Physics
+    sounds: Sounds
 
     sun: Vector3
 
@@ -88,6 +92,9 @@ export default class World {
         this.dropRotation = new DropRotation()
         this.dropUp = new DropUp()
         this.ferris = new Ferris()
+
+        this.sounds = new Sounds()
+        this.sounds.play()
 
         this.physics = new Physics()
         this.shields = new Shields(this.physics)

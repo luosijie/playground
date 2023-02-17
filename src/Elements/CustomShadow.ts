@@ -26,6 +26,7 @@ export default class CustomShadow {
             vertexShader,
             fragmentShader,
             transparent: true,
+            depthWrite: false,
             uniforms: {
                 uType: {
                     value: this.type === CustomShadowType.box ? 0. : 1. 
@@ -39,6 +40,7 @@ export default class CustomShadow {
                 }
             }
         })
+        
         const geometry = new PlaneGeometry(1.4, 1.4, 2, 2)
         this.main = new Mesh(geometry, this.material)
 
@@ -73,8 +75,8 @@ export default class CustomShadow {
 
         // set opacity
         let height = this.source.position.z
-        height = height > 10 ? 10 : height
-        const opacity = 1.0 - height / 10
+        height = height > 1 ? 1 : height
+        const opacity = 1.0 - height
         this.material.uniforms.uOpacity.value = opacity
     }
 }

@@ -12,17 +12,14 @@ float sineInOut (float t) {
 }
 
 void main () {
-    vec2 uv = vUv * 2. - 1.;
-
-    float opacity;
-
-    float lengthX = abs(uv.x);
-    float lengthY = abs(uv.y);
+    vec2 uv = vUv * 2. - 1.;    
 
     float strength;
 
     if (uType == 0.) {
-
+        float lengthX = abs(uv.x);
+        float lengthY = abs(uv.y);
+        // box
         if (lengthX > 1. - RADIUS && lengthY > 1. - RADIUS) {
             strength = clamp(1.0 - distance(vec2(lengthX, lengthY), vec2(1.0 - RADIUS, 1.0 - RADIUS)) / RADIUS, 0.0, 1.0);
         } else {
@@ -32,10 +29,11 @@ void main () {
         }
 
     } else {
-        strength = 1.0 - length(uv);
+        // circle
+        strength = clamp(1.0 - length(uv), 0., 1.);
     }
 
-    opacity = sineInOut(strength);
+    float opacity = sineInOut(strength);
 
     opacity *= uOpacity * .5;
     

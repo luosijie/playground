@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@tweakpane/core": "^1.1.1",
+    "@types/howler": "^2.2.7",
     "@types/node": "^18.11.19",
     "@types/three": "^0.146.0",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
@@ -39,6 +40,7 @@
     "cannon-es": "^0.20.0",
     "cannon-es-debugger": "^1.0.0",
     "gsap": "^3.11.4",
+    "howler": "^2.2.3",
     "quickhull-ts": "^1.0.2",
     "three": "^0.149.0",
     "tweakpane": "^3.1.1"
