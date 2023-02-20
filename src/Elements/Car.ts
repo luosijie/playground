@@ -1,9 +1,10 @@
-import { Group, Mesh, Box3 } from 'three'
+import { Group, Box3, Vector3 } from 'three'
 // import Shadow from './Shadow'
 
 import { Body, Box, Cylinder, Quaternion, RaycastVehicle, Vec3 } from 'cannon-es'
 import Physics from './Physics'
 import CustomShadow from './CustomShadow'
+import Sound from './Sound'
 
 const options = {
     chassis: {
@@ -40,9 +41,15 @@ const options = {
     }
 }
 
+enum SoundName {
+    Engine = 'Engine',
+    Brake = 'Brake'
+}
+
 export default class Car {
     model: Group
     physics: Physics
+    sounds: { [key in SoundName]: Sound }
 
     options: any
     main: Group
@@ -50,23 +57,34 @@ export default class Car {
     wheels: Group
     shadow: CustomShadow
     
-    physicsBodys: any
+    physicsBodies: any
     vehicle: RaycastVehicle
+    speed: number
 
     controls: any
     constructor (physics: Physics) {
 
         this.physics = physics
+        this.sounds = this.createSounds()
 
         this.options = options
 
         this.main = new Group()
+
+        this.physicsBodies = {
+            chassis: null,
+            wheels: []
+        }
+
+        this.speed = 0
 
         this.shadow = new CustomShadow()
         
     }
 
     build (model: Group) {
+        this.sounds[SoundName.Engine].play()
+        
         this.model = model
 
         this.body = this.createBody()
@@ -84,6 +102,13 @@ export default class Car {
         this.setControls()
     }
     
+    private createSounds () {
+        return {
+            [SoundName.Engine]: new Sound({ src: ['sounds/car-engine.wav'], loop: true }),
+            [SoundName.Brake]: new Sound({ src: ['sounds/car-brake.mp3'] })
+        }
+    }
+
     private createBody () {
         const body = new Group()
         this.model.children.forEach((mesh: any) => {
@@ -180,22 +205,7 @@ export default class Car {
         return wheel
     }
     
-    // private createShadow () {
-    //     const shadow =  new Shadow(this.body)
-    //     return shadow.main
-    // }
-
-    // Add models to sceen
-    // build () {
-    //     this.wheels.forEach(wheel => {
-    //         this.main.add(wheel)
-    //     })
-    //     // this.main.add(this.shadow)
-    // }
-
     private createVehicle () {
-        // Init physicsBodys to store body and wheels
-        this.physicsBodys = {}
 
         const chassisShape = new Box(
             new Vec3(this.options.chassis.width, this.options.chassis.length, this.options.chassis.height)
@@ -210,7 +220,7 @@ export default class Car {
         // chassisBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0)
         chassisBody.angularVelocity.set(0, 0, .5)
 
-        this.physicsBodys['body'] = chassisBody
+        this.physicsBodies.chassis = chassisBody
 
         // Vehicle
         const vehicle = new RaycastVehicle({
@@ -219,8 +229,6 @@ export default class Car {
             indexUpAxis: 2,
             indexForwardAxis: 1,
         })
-
-        this.physicsBodys['wheels'] = []
 
         for (let i = 0; i < this.wheels.children.length; i++) {
 
@@ -257,7 +265,7 @@ export default class Car {
             wheelBody.type = Body.KINEMATIC
             wheelBody.collisionFilterGroup = 0
 
-            this.physicsBodys['wheels'][i] = wheelBody
+            this.physicsBodies.wheels[i] = wheelBody
             this.physics.world.addBody(wheelBody)
         } 
 
@@ -319,6 +327,8 @@ export default class Car {
                     this.vehicle.setBrake(brakeForce, 1)
                     this.vehicle.setBrake(brakeForce, 2)
                     this.vehicle.setBrake(brakeForce, 3)
+                    console.log('press-b')
+                    this.sounds[SoundName.Brake].play()
                     break
 
             }
@@ -330,18 +340,22 @@ export default class Car {
     }
 
     update () {
-        this.body.position.set(0, 0, 0)
+        // this.body.position.set(0, 0, 0)
         // Update body
-        const physicsBody = this.physicsBodys['body']
-        this.body.position.copy(physicsBody.position)
-        this.body.quaternion.copy(physicsBody.quaternion)
+        const physicsChassis = this.physicsBodies.chassis
+
+        this.speed = this.body.position.distanceTo(new Vector3(physicsChassis.position.x, physicsChassis.position.y, physicsChassis.position.z))
+        this.sounds.Engine.volume(this.speed)
+        
+        this.body.position.copy(physicsChassis.position)
+        this.body.quaternion.copy(physicsChassis.quaternion)
 
         // Update wheels
         for  (let i = 0; i < this.vehicle.wheelInfos.length; i++) {
             this.vehicle.updateWheelTransform(i)
             const wheelInfo = this.vehicle.wheelInfos[i]
             const transform = wheelInfo.worldTransform
-            const wheelBody = this.physicsBodys['wheels'][i]
+            const wheelBody = this.physicsBodies.wheels[i]
             // update physics
             wheelBody.position.set(transform.position.x, transform.position.y, transform.position.z)
             wheelBody.quaternion.set(transform.quaternion.x, transform.quaternion.y, transform.quaternion.z, transform.quaternion.w)
@@ -356,8 +370,8 @@ export default class Car {
     destroy () {
         // Remove vehicle from physics world
         this.vehicle.removeFromWorld(this.physics.world)
-        // this.physicsBodys['body'].removeFromWorld(this.app.physics.world)
-        this.physicsBodys['wheels'].forEach((e: any) => {
+        // this.physicsBodies['body'].removeFromWorld(this.app.physics.world)
+        this.physicsBodies.wheels.forEach((e: any) => {
             // console.log(e)
             this.physics.world.removeBody(e)
             // e.removeFromWorld(this.app.physics.world)

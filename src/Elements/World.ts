@@ -1,4 +1,4 @@
-import { AxesHelper, Clock, Scene, Vector3, WebGLRenderer } from 'three'
+import { AxesHelper, Clock, Scene, sRGBEncoding, Vector3, WebGLRenderer } from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 import { Config } from '../Types'
@@ -9,7 +9,7 @@ import groundShadowMaterial  from '@/materials/groundShadow'
 import Camera from './Camera'
 import RailCar from './RailCar'
 import Car from './Car'
-import Physics from './Physics'
+import Physics, { CollideSoundName } from './Physics'
 import Repeats from './Repeats'
 import Windmill from './Windmill'
 import Carousel from './Carousel'
@@ -25,12 +25,12 @@ import Trees from './Trees'
 import Bricks from './Bricks'
 import { SHAPE_TYPES } from 'cannon-es'
 
-import { Howl } from 'howler'
-import Sounds from './Sounds'
+// import Sound from './Sound'
 
 export default class World {
     isDev: boolean
     isReady: boolean
+    isActive: boolean
 
     width: number
     height: number
@@ -45,7 +45,7 @@ export default class World {
     camera: Camera
 
     physics: Physics
-    sounds: Sounds
+    // sound: Sound
 
     sun: Vector3
 
@@ -69,6 +69,7 @@ export default class World {
     constructor (config: Config) {
         this.isDev = checkDev()
         this.isReady = false
+        this.isActive = false
 
         this.width = config.width
         this.height = config.height
@@ -85,7 +86,6 @@ export default class World {
         this.sun = new Vector3(-15.5866, -21.5806, 16.9775)
     
         this.railCar = new RailCar()
-        this.repeats = new Repeats()
         this.windmill = new Windmill()
         this.carousel = new Carousel()
         this.ship = new Ship()
@@ -93,10 +93,12 @@ export default class World {
         this.dropUp = new DropUp()
         this.ferris = new Ferris()
 
-        this.sounds = new Sounds()
-        this.sounds.play()
+        // this.sound = new Sound()
+        // this.sound.play('one')
+        // this.sound.play()
 
         this.physics = new Physics()
+        this.repeats = new Repeats(this.physics)
         this.shields = new Shields(this.physics)
         this.trees = new Trees(this.physics)
         this.car = new Car(this.physics)
@@ -125,6 +127,7 @@ export default class World {
         renderer.setSize( this.width, this.height)
         renderer.setAnimationLoop( this.render.bind(this) )
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+        renderer.outputEncoding = sRGBEncoding
 
         // renderer.outputEncoding = sRGBEncoding
         return renderer
@@ -145,14 +148,17 @@ export default class World {
             this.ferris.update()
             this.railCar.update()
             this.bricks.update()
-            
-            if (this.isDev) {
-                this.cannonDebugger.update()
-                this.controls.update()
-            } else {
-                this.camera.follow(this.car.body.position)
-            }
+            this.camera.update()
         } 
+
+        if (this.isActive && !this.isDev) {
+            this.camera.follow(this.car.body.position)
+        }
+
+        if (this.isDev) {
+            this.cannonDebugger.update()
+            this.controls.update()
+        }
 
         // this.controls.update()
         this.renderer.render( this.scene, this.camera.main )
@@ -222,7 +228,7 @@ export default class World {
             }
 
             if (data.physics === 'static') {
-                this.physics.createBody({ mesh: e, mass: 0, shapeType: SHAPE_TYPES.BOX })
+                this.physics.createBody({ mesh: e, mass: 0, shapeType: SHAPE_TYPES.BOX, collideSound: CollideSoundName.Wall })
             }
 
             if (data.name === 'area') {
@@ -263,14 +269,18 @@ export default class World {
         // init car
         this.car.build(modelCarScene)
         this.scene.add(this.car.main)
+        
+        this.bricks.build(resources)
+        this.scene.add(this.bricks.main)
 
         this.trees.build()
         this.scene.add(this.trees.main)
 
-        this.bricks.build(resources)
-        this.scene.add(this.bricks.main)
-
         this.isReady = true
+
+        this.camera.ready(() => {
+            console.log('scene is ready')
+        })
 
     }
 

@@ -1,5 +1,5 @@
 import { Mesh, Vector3, Shape, ExtrudeGeometry, ShaderMaterial } from 'three'
-import Physics from './Physics'
+import Physics, { CollideSoundName } from './Physics'
 import { Body, SHAPE_TYPES } from 'cannon-es'
 import { gsap } from 'gsap'
 
@@ -54,8 +54,8 @@ export default class Shield {
     }
 
     private createPhysicsBody () {
-        const physicsBody = this.physics.createBody({ mesh: this.main, shapeType: SHAPE_TYPES.BOX, mass: 0 })
-
+        const physicsBody = this.physics.createBody({ mesh: this.main, shapeType: SHAPE_TYPES.BOX, mass: 0, collideSound: CollideSoundName.Wall })
+        physicsBody.sleep()
         physicsBody.addEventListener('collide', () => {
             this.show()
         })

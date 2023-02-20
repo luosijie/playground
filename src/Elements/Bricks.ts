@@ -1,5 +1,5 @@
 import { Group, Mesh, Vector3 } from 'three'
-import Physics from './Physics'
+import Physics, { CollideSoundName } from './Physics'
 import { SHAPE_TYPES } from 'cannon-es'
 import matcapMaterial from '@/materials/matcap'
 import { Body } from 'cannon-es'
@@ -69,7 +69,8 @@ export default class Bricks {
             this.meshes.push(brick)
             this.main.add(brick)
 
-            const brickPhysics = this.physics.createBody({ mesh: brick, shapeType: SHAPE_TYPES.BOX, mass: 10 })
+            const brickPhysics = this.physics.createBody({ mesh: brick, shapeType: SHAPE_TYPES.BOX, mass: 10, collideSound: CollideSoundName.Brick })
+
             this.physicsBodies.push(brickPhysics)
 
             const shadow = new CustomShadow()

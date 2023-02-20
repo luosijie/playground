@@ -1,6 +1,7 @@
-import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World, BodyType, BODY_TYPES, Box, Cylinder, Quaternion, ShapeType, SHAPE_TYPES, Vec3, EventTarget} from 'cannon-es'
+import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World, BodyType, BODY_TYPES, Box, Cylinder, Quaternion, ShapeType, SHAPE_TYPES, Vec3, EventTarget, COLLISION_TYPES} from 'cannon-es'
 
 import { Box3, Mesh} from 'three'
+import Sound from './Sound'
 
 interface Materials {
     ground: Material
@@ -8,20 +9,28 @@ interface Materials {
     default: Material
 }
 
+export enum CollideSoundName {
+    Wall = 'Wall',
+    Tree = 'Tree',
+    Brick = 'Brick'
+}
+
 interface BodyConfig {
     mesh: Mesh
     shapeType: ShapeType
     mass: number
-    type?: BodyType
+    type?: BodyType,
+    collideSound?: CollideSoundName
 }
 
 export default class Physics {
     world: World
     materials: Materials
+    collideSounds: { [key in CollideSoundName]: Sound }
     constructor () {
         this.world = this.createWorld()
         this.materials = this.createMaterials()
-
+        this.collideSounds = this.createCollideSounds()
         this.setGround()
     }
 
@@ -88,11 +97,20 @@ export default class Physics {
         this.world.addBody(ground)
     }
 
+    private createCollideSounds () {
+        const sounds = {
+            [CollideSoundName.Wall]: new Sound({ src: [ 'sounds/wall-hit.mp3' ] }),
+            [CollideSoundName.Tree]: new Sound({ src: [ 'sounds/tree-hit.mp3' ] }),
+            [CollideSoundName.Brick]: new Sound({ src: [ 'sounds/brick-hit.mp3' ] }),
+        }
+        return sounds
+    }
+
     createBody (config: BodyConfig) {
         const body = new Body({ 
             mass: config.mass, 
             material: this.materials.default, 
-            type: config.type || BODY_TYPES.DYNAMIC 
+            type: config.type || BODY_TYPES.DYNAMIC
         })
 
         body.allowSleep = true
@@ -129,6 +147,13 @@ export default class Physics {
             }
     
         }
+
+        body.addEventListener('collide', () => {
+            if (config.collideSound) {
+                const sound = this.collideSounds[config.collideSound]
+                sound.play()
+            }
+        })
 
         this.world.addBody(body)
     

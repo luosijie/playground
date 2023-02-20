@@ -4,16 +4,22 @@
  * Just to minimize the size of exported file, maybe decrease 500KB
  */
 
+import { SHAPE_TYPES } from 'cannon-es'
 import { Group, Mesh, Vector3, Vector4 } from 'three'
+import Physics, { CollideSoundName } from './Physics'
 
 const degToRand = (deg: number) => {
     return deg / 180 * Math.PI
 }
 
 export default class Repeats {
+    physics: Physics
+
     main: Group
     models: any
-    constructor () {
+    constructor (physics: Physics) {
+        this.physics = physics
+
         this.main = new Group()
         this.models = {
             'mole': new Group(),
@@ -78,19 +84,24 @@ export default class Repeats {
         const carStationFanGap = 2.2
         const carStationFanNum = 4
         carStationFan.position.copy(new Vector3(-11.5902, 20.8363, 6.09009))
-        for (let x = 1; x < carStationFanNum; x++) {
+        for (let x = 0; x < carStationFanNum; x++) {
             const n = carStationFan.clone().translateX(x * carStationFanGap)
             this.main.add(n)
         }
 
         // car-station-sylinder
         const statiopnSylinder = this.models['station-sylinder']
+        
+        this.physics.createBody({ mesh: statiopnSylinder, shapeType: SHAPE_TYPES.CYLINDER, mass: 0, collideSound: CollideSoundName.Wall })
         const statiopnSylinderGap = 4.0
         const statiopnSylinderNum = 3
         for (let x = 1; x < statiopnSylinderNum; x++) {
             const n = statiopnSylinder.clone().translateX(x * statiopnSylinderGap)
+            this.physics.createBody({ mesh: n, shapeType: SHAPE_TYPES.CYLINDER, mass: 0, collideSound: CollideSoundName.Wall })
             this.main.add(n)
         }
+        // console.log('statiopnSylinder', statiopnSylinder)
+        // statiopnSylinder.parent.remove(statiopnSylinder)
 
         // carousel-ball
         const carouselBall = this.models['carousel-ball']

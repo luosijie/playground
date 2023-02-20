@@ -1,5 +1,5 @@
 import { Group, Mesh, Vector3 } from 'three'
-import Physics from './Physics'
+import Physics, { CollideSoundName } from './Physics'
 import { SHAPE_TYPES } from 'cannon-es'
 import CustomShadow, { CustomShadowType } from './CustomShadow'
 
@@ -19,8 +19,10 @@ const defaultTrees = [
 ]
 
 export default class Trees {
-    models: Array<Mesh>
     physics: Physics
+
+    models: Array<Mesh>
+    
     main: Group
 
     rotation: number
@@ -42,7 +44,8 @@ export default class Trees {
         tree.position.copy(position)
         tree.scale.set(scale, scale, scale)
         
-        this.physics.createBody({ mesh: tree, shapeType: SHAPE_TYPES.CYLINDER, mass: 0 })
+        const body = this.physics.createBody({ mesh: tree, shapeType: SHAPE_TYPES.CYLINDER, mass: 0, collideSound: CollideSoundName.Tree })
+        body.sleep()
 
         const shadow = new CustomShadow(CustomShadowType.circle)
         shadow.build(tree)

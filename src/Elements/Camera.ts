@@ -1,19 +1,38 @@
+import { gsap } from 'gsap'
 import { PerspectiveCamera, Vector3 } from 'three'
 
 // Define the relative position of the car
 // const cameraPosition = new Vector3(81.8107, -68.4092, 96.8815).normalize()
-const cameraPosition = new Vector3(81.8107, -68.4092, 90.8815).normalize()
-const fovs = {
-    default: new Vector3(1, -1, 1).normalize()
+const viewPosition = {
+    default: new Vector3(1, -1, 1).normalize(),
+    active: new Vector3(81.8107, -68.4092, 90.8815).normalize()
 }
 
+enum viewScalar {
+    Loading = 1000,
+    Ready = 90,
+    Active = 30
+}
+
+interface View {
+    position: Vector3,
+    scalar: number
+}
 export default class Camera {
     width: number
     height: number
     main: PerspectiveCamera
+    view: View
+    target: Vector3
     constructor (width: number, height: number) {
+        this.view = {
+            position: viewPosition.default.clone(),
+            scalar: viewScalar.Loading
+        }
+        this.target = new Vector3()
+
         const camera = new PerspectiveCamera( 40, width / height, 0.1, 1000 )
-        camera.position.copy(fovs.default.clone().multiplyScalar(90))
+        camera.position.copy(this.view.position.clone().multiplyScalar(this.view.scalar))
         camera.up.set(0, 0, 1)
         
         // camera.position.copy(cameraPosition.clone().normalize().multiplyScalar(multiple))
@@ -27,9 +46,19 @@ export default class Camera {
         this.main.updateProjectionMatrix()
     }
 
+    ready (onComplete: () => void) {
+        gsap.to(this.view, {  scalar: viewScalar.Ready, duration: 2, onComplete })
+    }
+
     follow (target: Vector3) {
-        this.main.position.copy(target).add(cameraPosition.clone().multiplyScalar(30))
+        this.main.position.copy(target).add(viewPosition.active.clone().multiplyScalar(viewScalar.Active))
         this.main.lookAt(target)
+        this.main.updateProjectionMatrix()
+    }
+
+    update () {
+        this.main.position.copy(this.view.position.clone().multiplyScalar(this.view.scalar))
+        this.main.lookAt(this.target)
         this.main.updateProjectionMatrix()
     }
 }
