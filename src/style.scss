@@ -1,9 +1,10 @@
 * {
     margin:0;
-    padding:0
+    padding:0;
+    box-sizing: border-box;
 } 
 body {
-    font-family: Coustard, serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-weight: 400;
     color: #ffffff;
     background: #000000;
@@ -22,20 +23,102 @@ body {
 }
 .actions {
     position: fixed;
-    top: 0;
+    top: -70px;
     left: 0;
     z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
     width: 100%;
-    height: 100%;
+    height: 80px;
     button {
-        width: 60px;
-        height: 60px;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        font-weight: bold;
         border: 0;
         border-radius: 50%;
-        
+        color: #edab77;
+        cursor: pointer;
+    }
+}
+.loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 100px;
+    font-weight: bold;
+    .percent {
+        font-size: 120px;
+    }
+    .unit {
+        margin-bottom: 10px;
+    }
+}
+.info {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    padding-top: 80px;
+    width: 600px;
+    height: 400px;
+    border-radius: 30px;
+    color:  #333333;
+    background: white;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    .logo {
+        box-sizing: content-box;
+        position: absolute;
+        top: -80px;
+        left: 50%;
+        height: 160px;
+        border: 10px solid #f8f8f8;
+        border-radius: 50%;
+        background-color: white;
+        transform: translateX(-50%);
+    }
+    .title {
+        font-size: 26px;
+        font-weight: bold;
+    }
+    .author {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #aaaaaa;
+    }
+    .sub-title {
+        margin: 10px 0;
+        font-weight: bold;
+    }
+    a {
+        text-decoration: none;
+        color: #349acd;
+    }
+    .close-info {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        padding-bottom: 5px;
+        width: 60px;
+        height: 60px;
+        font-size: 36px;
+        border: 4px solid #f8f8f8;
+        border-radius: 50%;
+        text-align: center;
+        color: #cccccc;
     }
 }

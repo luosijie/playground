@@ -99,9 +99,9 @@ export default class Physics {
 
     private createCollideSounds () {
         const sounds = {
-            [CollideSoundName.Wall]: new Sound({ src: [ 'sounds/wall-hit.mp3' ] }),
-            [CollideSoundName.Tree]: new Sound({ src: [ 'sounds/tree-hit.mp3' ] }),
-            [CollideSoundName.Brick]: new Sound({ src: [ 'sounds/brick-hit.mp3' ] }),
+            [CollideSoundName.Wall]: new Sound({ src: [ 'sounds/wall-hit.mp3' ], volume: .3 }),
+            [CollideSoundName.Tree]: new Sound({ src: [ 'sounds/tree-hit.mp3' ], volume: .3 }),
+            [CollideSoundName.Brick]: new Sound({ src: [ 'sounds/brick-hit.mp3' ], volume: .3 }),
         }
         return sounds
     }
@@ -114,6 +114,7 @@ export default class Physics {
         })
 
         body.allowSleep = true
+        body.sleep()
     
         const box = new Box3().setFromObject(config.mesh)
         const size = new Vec3 (

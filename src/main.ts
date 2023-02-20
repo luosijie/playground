@@ -1,5 +1,7 @@
 import './style.scss'
 
+import { gsap } from 'gsap'
+
 import Loader from './utils/Loader'
 import configResources from './config/resources'
 
@@ -27,9 +29,25 @@ if (canvas) {
 // Load resources
 loader.load(configResources)
 
+// Load progress
+const percent = document.querySelector('.percent')
+loader.onFileLoaded(() => {
+    const value: number = loader.totalSuccess / loader.total * 100
+    if (percent instanceof HTMLElement) {
+        percent.innerText = String(Math.round(value))
+    }
+})
+
 // Render world elements when resources is ready
 loader.onLoadEnd(resources => {
+    gsap.to('.loading', { opacity: 0 })
+
     world.build(resources)
+
+    const goButton = document.querySelector('.go')
+    goButton?.addEventListener('click', () => {
+        world.active()
+    })
 })
 
 window.addEventListener('resize', () => {

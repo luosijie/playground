@@ -206,6 +206,7 @@ export default class Repeats {
             new Vector4(16.0103, 12.9867, 0.505387, degToRand(25.7134)),
             new Vector4(13.3788, 15.3714, 0.505387, degToRand(6.69899)),
             new Vector4(11.2202, 16.2143, 0.505387, degToRand(-26.7294)),
+            new Vector4(11.3025, 14.1174, 0.505387, degToRand(99.1655)),
             new Vector4(16.3804, 16.6666, 0.505387, degToRand(74.7854))
         ]
 

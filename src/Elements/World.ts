@@ -25,6 +25,8 @@ import Trees from './Trees'
 import Bricks from './Bricks'
 import { SHAPE_TYPES } from 'cannon-es'
 
+import { gsap } from 'gsap'
+
 // import Sound from './Sound'
 
 export default class World {
@@ -150,7 +152,7 @@ export default class World {
             this.bricks.update()
             this.camera.update()
         } 
-
+        
         if (this.isActive && !this.isDev) {
             this.camera.follow(this.car.body.position)
         }
@@ -269,19 +271,32 @@ export default class World {
         // init car
         this.car.build(modelCarScene)
         this.scene.add(this.car.main)
-        
-        this.bricks.build(resources)
-        this.scene.add(this.bricks.main)
 
-        this.trees.build()
-        this.scene.add(this.trees.main)
+        this.bricks.add(resources)
 
         this.isReady = true
 
         this.camera.ready(() => {
+            gsap.to('.actions', { top: 0 })
             console.log('scene is ready')
         })
 
+    }
+
+    active () {
+        this.camera.active(this.car.body.position, () => {
+            gsap.to('.actions', { top: -70 })
+
+            this.bricks.build()
+            this.scene.add(this.bricks.main)
+
+            this.trees.build()
+            this.scene.add(this.trees.main)
+        
+            this.isActive = true
+            console.log('world is active')
+        })
+        // this.isActive = true
     }
 
     // Update canvas size when window resizing

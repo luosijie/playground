@@ -55,7 +55,7 @@ export default class Shield {
 
     private createPhysicsBody () {
         const physicsBody = this.physics.createBody({ mesh: this.main, shapeType: SHAPE_TYPES.BOX, mass: 0, collideSound: CollideSoundName.Wall })
-        physicsBody.sleep()
+      
         physicsBody.addEventListener('collide', () => {
             this.show()
         })

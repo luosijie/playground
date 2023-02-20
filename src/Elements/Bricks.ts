@@ -8,6 +8,8 @@ import CustomShadow from './CustomShadow'
 const colors = [ 'blue', 'red', 'yellow', 'red', 'brown' ]
 
 export default class Bricks {
+
+    resources: any 
     models: Array<Mesh>
 
     physics: Physics
@@ -44,8 +46,12 @@ export default class Bricks {
         return brick
     }
 
-    build (resources: any) {
-        const modelBricks = resources['model-bricks'].scene
+    add (resources: any) {
+        this.resources = resources
+    }
+
+    build () {
+        const modelBricks = this.resources['model-bricks'].scene
         this.models.push(...modelBricks.children)
       
         // set random trees
@@ -65,12 +71,12 @@ export default class Bricks {
             )
             const brick = this.createBrick(position)
             const color = colors[Math.round(Math.random() * 3)]
-            brick.material = matcapMaterial(resources[`matcap-${color}`])
+            brick.material = matcapMaterial(this.resources[`matcap-${color}`])
             this.meshes.push(brick)
             this.main.add(brick)
 
             const brickPhysics = this.physics.createBody({ mesh: brick, shapeType: SHAPE_TYPES.BOX, mass: 10, collideSound: CollideSoundName.Brick })
-
+            brickPhysics.wakeUp()
             this.physicsBodies.push(brickPhysics)
 
             const shadow = new CustomShadow()

@@ -50,14 +50,18 @@ export default class Camera {
         gsap.to(this.view, {  scalar: viewScalar.Ready, duration: 2, onComplete })
     }
 
+    active (target: Vector3, onComplete: () => void) {
+        gsap.timeline()
+            .to(this.target, { x: target.x, y: target.y, z: target.z, duration: 1.5}, 0)
+            .to(this.view, { scalar: viewScalar.Active, onComplete, duration: 1.5}, 0)
+    }
+
     follow (target: Vector3) {
-        this.main.position.copy(target).add(viewPosition.active.clone().multiplyScalar(viewScalar.Active))
-        this.main.lookAt(target)
-        this.main.updateProjectionMatrix()
+        this.target = target
     }
 
     update () {
-        this.main.position.copy(this.view.position.clone().multiplyScalar(this.view.scalar))
+        this.main.position.copy(this.target).add(this.view.position.clone().multiplyScalar(this.view.scalar))
         this.main.lookAt(this.target)
         this.main.updateProjectionMatrix()
     }
