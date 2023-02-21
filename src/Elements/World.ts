@@ -26,6 +26,7 @@ import Bricks from './Bricks'
 import { SHAPE_TYPES } from 'cannon-es'
 
 import { gsap } from 'gsap'
+import CoffeeSmoke from './CoffeeSmoke'
 
 // import Sound from './Sound'
 
@@ -61,6 +62,8 @@ export default class World {
     dropUp: DropUp
     ferris: Ferris
     car: Car
+
+    coffeeSmoke: CoffeeSmoke
 
     shields: Shields
     trees: Trees
@@ -98,6 +101,7 @@ export default class World {
         // this.sound = new Sound()
         // this.sound.play('one')
         // this.sound.play()
+        this.coffeeSmoke = new CoffeeSmoke()
 
         this.physics = new Physics()
         this.repeats = new Repeats(this.physics)
@@ -239,6 +243,10 @@ export default class World {
 
             if (data.name.includes('tree-')) {
                 this.trees.add(e)
+            }
+
+            if (data.name === 'coffee-smoke') {
+                this.coffeeSmoke.add(e)
             }
             
         })
