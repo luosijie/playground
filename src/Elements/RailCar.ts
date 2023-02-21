@@ -64,7 +64,7 @@ export default class RailCar {
         const tangent = this.path.getTangent(this.progress)
         tangent.negate()
         
-        // set axis-x rotation
+        // set axis-y rotation
         const randY = new Vector3(0, 0, 1).angleTo(tangent)
         const axis = new Vector3(0, 1, 0)
         axis.applyAxisAngle(new Vector3(0, 0, 1), this.main.rotation.z)
@@ -76,7 +76,7 @@ export default class RailCar {
         const randZ = new Vector3(1, 0, 0).angleTo(tangentZ)
        
         if (new Vector3(1, 0, 0).cross(tangent).z > 0) {
-            this.main.rotation.z = Math.PI + randZ
+            this.main.rotation.z = randZ
         } else {
             this.main.rotation.z = -randZ
         }
