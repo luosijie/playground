@@ -1,13 +1,16 @@
-import { BufferGeometry, CurvePath, Object3D, LineCurve3, Mesh, Vector3 } from 'three'
+import { BufferGeometry, CurvePath, Object3D, LineCurve3, Mesh, Vector3, Group } from 'three'
 
 const SPEED = 0.0008
+const NUMS = 6
 export default class RailCar {
     models: Array<Mesh>
     path: CurvePath<any>
     main: Object3D
+    cars: Array<Object3D>
     progress: number
     constructor () {
         this.models = []
+        this.cars = []
         this.main = new Object3D()
         this.path = new CurvePath()
         this.progress = 1
@@ -46,41 +49,56 @@ export default class RailCar {
         // const material = new PointsMaterial({ color: 0x888888, size: 2 })
         // console.log('22', pathPoints)
         // const points = new Points(pathPoints, material)
-
+        const car = new Object3D()
         const defaultPosition = this.models[0].position.clone()
         this.models.forEach(e => {
             e.position.set(0, 0, 0)
-            this.main.add(e)
+            car.add(e)
         })
-        this.main.position.copy(defaultPosition)
+        car.position.copy(defaultPosition)
+        this.main.add(car)
+        this.cars.push(car)
 
+        for (let i = 1; i < NUMS; i++) {
+            const nCar = car.clone()
+            this.cars.push(nCar)
+            this.main.add(nCar)
+        }
     }
 
     update () {
         this.progress -= SPEED
         if (this.progress < 0) this.progress = 1
 
-        const curentPoint = this.path.getPoint(this.progress)
-        const tangent = this.path.getTangent(this.progress)
-        tangent.negate()
+        for (let i = 0; i < this.cars.length; i++) {
+            const car = this.cars[i]
+            let progress = this.progress - i * SPEED * 20
+            if (progress < 0) progress = 1 + (this.progress - i * SPEED * 20)
+
+            const curentPoint = this.path.getPoint(progress)
+            const tangent = this.path.getTangent(progress)
+            tangent.negate()
         
-        // set axis-y rotation
-        const randY = new Vector3(0, 0, 1).angleTo(tangent)
-        const axis = new Vector3(0, 1, 0)
-        axis.applyAxisAngle(new Vector3(0, 0, 1), this.main.rotation.z)
-        this.main.setRotationFromAxisAngle(axis, randY - Math.PI / 2)
+            // set axis-y rotation
+            const randY = new Vector3(0, 0, 1).angleTo(tangent)
+            const axis = new Vector3(0, 1, 0)
+        
+            axis.applyAxisAngle(new Vector3(0, 0, 1), car.rotation.z)
+            car.setRotationFromAxisAngle(axis, randY - Math.PI / 2)
+    
+            // set axis-z rotation
+            const tangentZ = tangent.clone()
+            tangentZ.z = 0
+            const randZ = new Vector3(1, 0, 0).angleTo(tangentZ)
+           
+            if (new Vector3(1, 0, 0).cross(tangent).z > 0) {
+                car.rotation.z = randZ
+            } else {
+                car.rotation.z = -randZ
+            }
+    
+            car.position.copy(curentPoint)
 
-        // set axis-z rotation
-        const tangentZ = tangent.clone()
-        tangentZ.z = 0
-        const randZ = new Vector3(1, 0, 0).angleTo(tangentZ)
-       
-        if (new Vector3(1, 0, 0).cross(tangent).z > 0) {
-            this.main.rotation.z = randZ
-        } else {
-            this.main.rotation.z = -randZ
         }
-
-        this.main.position.copy(curentPoint)
     }
 }

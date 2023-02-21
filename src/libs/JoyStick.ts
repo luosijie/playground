@@ -139,7 +139,6 @@ export default class JoyStick {
     }
 
     private onTouchMove (evt: TouchEvent) {
-        console.log('touch-move', this.pressed, evt.targetTouches[0].target, this.canvas)
         if (this.pressed === 1 && evt.targetTouches[0].target === this.canvas) {
             this.movedX = evt.targetTouches[0].pageX
             this.movedY = evt.targetTouches[0].pageY
