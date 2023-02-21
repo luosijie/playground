@@ -7,6 +7,7 @@ import configResources from './config/resources'
 
 import World from './Elements/World'
 import { Config } from './Types'
+import JoyStick, {StickStatus} from './libs/JoyStick'
 
 const loader = new Loader()
 
@@ -19,17 +20,16 @@ const config: Config = {
 
 let world: World
 
-// Init canvas
+// Init World
 const canvas = document.querySelector('canvas')
 if (canvas) {
     config.canvas = canvas
     world = new World(config)
 }
 
-// Load resources
+/** Load process start */
 loader.load(configResources)
 
-// Load progress
 const percent = document.querySelector('.percent')
 loader.onFileLoaded(() => {
     const value: number = loader.totalSuccess / loader.total * 100
@@ -38,18 +38,35 @@ loader.onFileLoaded(() => {
     }
 })
 
-// Render world elements when resources is ready
 loader.onLoadEnd(resources => {
-    gsap.to('.loading', { opacity: 0 })
+    gsap.to('.loading', { opacity: 0, onComplete: () => {
+        world.build(resources)
+    } })
 
-    world.build(resources)
-
-    const goButton = document.querySelector('.go')
-    goButton?.addEventListener('click', () => {
-        world.active()
-    })
 })
+
+/** Load process end */
 
 window.addEventListener('resize', () => {
     world.updateSize(window.innerWidth, window.innerHeight)
 })
+
+/***************************************************************
+ * Buttons event binding
+ **************************************************************/
+
+const goButton = document.querySelector('button.go')
+goButton?.addEventListener('click', () => {
+    world.active()
+})
+    
+const showInfoButton = document.querySelector('button.show-info')
+showInfoButton?.addEventListener('click', () => {
+    gsap.to('.info', { opacity: 1 })
+})
+
+const closeInfoButton = document.querySelector('button.close-info')
+closeInfoButton?.addEventListener('click', () => {
+    gsap.to('.info', { opacity: 0 })
+})
+

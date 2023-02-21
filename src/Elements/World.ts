@@ -277,8 +277,7 @@ export default class World {
         this.isReady = true
 
         this.camera.ready(() => {
-            gsap.to('.actions', { top: 0 })
-            console.log('scene is ready')
+            gsap.to('.actions', { top: 0})
         })
 
     }
@@ -292,11 +291,21 @@ export default class World {
 
             this.trees.build()
             this.scene.add(this.trees.main)
+
+            this.car.setControls()
         
             this.isActive = true
             console.log('world is active')
         })
         // this.isActive = true
+    }
+
+    refresh () {
+        this.isActive = false
+        this.camera.ready(() => {
+            gsap.to('.actions', { top: 0 })
+        })
+        // console.log('need refresh')
     }
 
     // Update canvas size when window resizing

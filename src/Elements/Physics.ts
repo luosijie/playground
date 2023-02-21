@@ -55,7 +55,7 @@ export default class Physics {
             materials.ground,
             materials.wheel, 
             {
-                friction: .8,
+                friction: 1,
                 restitution: 0,
                 contactEquationStiffness: 1000
             }

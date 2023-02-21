@@ -1,10 +1,12 @@
-import { Group, Box3, Vector3 } from 'three'
+import { Group, Box3, Vector3, Vector2 } from 'three'
 // import Shadow from './Shadow'
 
 import { Body, Box, Cylinder, Quaternion, RaycastVehicle, Vec3 } from 'cannon-es'
 import Physics from './Physics'
 import CustomShadow from './CustomShadow'
 import Sound from './Sound'
+import checkMobile from '@/utils/checkMobile'
+import JoyStick, { StickStatus } from '@/libs/JoyStick'
 
 const options = {
     chassis: {
@@ -36,8 +38,8 @@ const options = {
     },
     control: {
         maxSteerVal: 0.5,
-        maxForce: 750,
-        brakeForce: 15
+        maxForce: 500,
+        brakeForce: 20
     }
 }
 
@@ -98,8 +100,6 @@ export default class Car {
         this.shadow.build(this.body)
 
         this.vehicle = this.createVehicle()
-
-        this.setControls()
     }
     
     private createSounds () {
@@ -275,13 +275,52 @@ export default class Car {
     }
 
     setControls () {
+        
+        const maxSteerVal = this.options.control.maxSteerVal
+        const maxForce = this.options.control.maxForce
+        const brakeForce = this.options.control.brakeForce
+
+        if (checkMobile()) {
+            const stickContainer = document.createElement('div')
+            stickContainer.style.cssText = `
+                position: fixed;
+                width: 80px;
+                height: 80px;
+                z-index: 99999999;
+                border-radius: 50%;
+                bottom: 30px;
+                left: 50%;
+                margin-left: -40px;
+            `
+            document.body.appendChild(stickContainer)
+
+            new JoyStick(stickContainer, {  }, (status: StickStatus) => {
+                const position = new Vector2(status.x, status.y)
+                let force = position.length()
+
+                force = position.y > 0 ? -force : force
+
+                this.vehicle.applyEngineForce(force, 2)
+                this.vehicle.applyEngineForce(force, 3)
+
+                const angle = position.angle()
+                const offsetAngle = Math.PI / 4
+                const banSteer = (angle > Math.PI / 2 - offsetAngle && angle < Math.PI / 2 + offsetAngle) || (angle > Math.PI * 3 - offsetAngle && angle < Math.PI * 3 + offsetAngle)
+                // if ( !banSteer) {
+                const steerVal = angle === 0 ? 0 : Math.PI - angle
+                this.vehicle.setSteeringValue(-steerVal, 0)
+                this.vehicle.setSteeringValue(-steerVal, 1)
+                // }
+                console.log('status', position.angle() / Math.PI * 180)
+            })
+            return
+        }
+
         if (this.controls) {
             window.removeEventListener('keydown', this.controls)
             window.removeEventListener('keyup', this.controls)
         }
-        const maxSteerVal = this.options.control.maxSteerVal
-        const maxForce = this.options.control.maxForce
-        const brakeForce = this.options.control.brakeForce
+
         this.controls = (event: any) => {
             const up = (event.type == 'keyup')
 
@@ -327,7 +366,6 @@ export default class Car {
                     this.vehicle.setBrake(brakeForce, 1)
                     this.vehicle.setBrake(brakeForce, 2)
                     this.vehicle.setBrake(brakeForce, 3)
-                    console.log('press-b')
                     this.sounds[SoundName.Brake].play()
                     break
 
@@ -349,6 +387,10 @@ export default class Car {
         
         this.body.position.copy(physicsChassis.position)
         this.body.quaternion.copy(physicsChassis.quaternion)
+
+        // const localZ = new Vector3(0, 0, 1).applyQuaternion(this.body.quaternion)
+        // const angle = localZ.angleTo(new Vector3(0, 0, 1))
+        // console.log(angle / Math.PI * 180)
 
         // Update wheels
         for  (let i = 0; i < this.vehicle.wheelInfos.length; i++) {

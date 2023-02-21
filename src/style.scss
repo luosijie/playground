@@ -1,3 +1,4 @@
+$color-primary: #edab77;
 * {
     margin:0;
     padding:0;
@@ -8,6 +9,12 @@ body {
     font-weight: 400;
     color: #ffffff;
     background: #000000;
+}
+button {
+    border: none;
+    background-color: white;
+    outline: none;
+    cursor: pointer;
 }
 .canvas-container {
     position: fixed;
@@ -36,10 +43,8 @@ body {
         height: 50px;
         font-size: 20px;
         font-weight: bold;
-        border: 0;
         border-radius: 50%;
-        color: #edab77;
-        cursor: pointer;
+        color: $color-primary;
     }
 }
 .loading {
@@ -61,6 +66,21 @@ body {
         margin-bottom: 10px;
     }
 }
+.bottom-bar {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 99;
+    button {
+        margin-left: 10px;
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        font-weight: bold;
+        border-radius: 50%;
+        color: $color-primary;
+    }
+}
 .info {
     position: fixed;
     top: 50%;
@@ -78,6 +98,7 @@ body {
     background: white;
     transform: translate(-50%, -50%);
     flex-direction: column;
+    opacity: 0;
     .logo {
         box-sizing: content-box;
         position: absolute;
@@ -120,5 +141,6 @@ body {
         border-radius: 50%;
         text-align: center;
         color: #cccccc;
+        cursor: pointer;
     }
 }
