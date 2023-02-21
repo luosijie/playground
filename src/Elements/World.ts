@@ -155,6 +155,7 @@ export default class World {
             this.railCar.update()
             this.bricks.update()
             this.camera.update()
+            this.coffeeSmoke.update(this.clock.getElapsedTime())
         } 
         
         if (this.isActive && !this.isDev) {

@@ -30,7 +30,9 @@ export default class CoffeeSmoke {
         this.main.material = this.material
     }
 
-    update () {
+    update (elapsedTime: number) {
+        this.material.uniforms.uTime.value = elapsedTime
+        this.material.needsUpdate
         // this.main.rotation.x = this.rotation
     }
 }
