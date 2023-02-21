@@ -38,7 +38,7 @@ const options = {
     },
     control: {
         maxSteerVal: 0.5,
-        maxForce: 500,
+        maxForce: 380,
         brakeForce: 20
     }
 }
@@ -297,6 +297,7 @@ export default class Car {
             new JoyStick(stickContainer, {  }, (status: StickStatus) => {
                 const position = new Vector2(status.x, status.y)
                 let force = position.length()
+                force = force > maxForce ? maxForce : force
 
                 force = position.y > 0 ? -force : force
 
@@ -304,14 +305,11 @@ export default class Car {
                 this.vehicle.applyEngineForce(force, 3)
 
                 const angle = position.angle()
-                const offsetAngle = Math.PI / 4
-                const banSteer = (angle > Math.PI / 2 - offsetAngle && angle < Math.PI / 2 + offsetAngle) || (angle > Math.PI * 3 - offsetAngle && angle < Math.PI * 3 + offsetAngle)
-                // if ( !banSteer) {
-                const steerVal = angle === 0 ? 0 : Math.PI - angle
-                this.vehicle.setSteeringValue(-steerVal, 0)
-                this.vehicle.setSteeringValue(-steerVal, 1)
-                // }
-                console.log('status', position.angle() / Math.PI * 180)
+                let steerVal = position.y > 0 ? Math.abs(Math.PI / 2 - angle) : Math.abs(Math.PI / 2 * 3 - angle)
+                steerVal = steerVal > maxSteerVal ? maxSteerVal : steerVal
+                steerVal = position.x > 0 ? -steerVal : steerVal
+                this.vehicle.setSteeringValue(steerVal, 0)
+                this.vehicle.setSteeringValue(steerVal, 1)
             })
             return
         }

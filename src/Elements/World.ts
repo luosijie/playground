@@ -283,8 +283,8 @@ export default class World {
     }
 
     active () {
+        gsap.to('.actions', { top: -70 })
         this.camera.active(this.car.body.position, () => {
-            gsap.to('.actions', { top: -70 })
 
             this.bricks.build()
             this.scene.add(this.bricks.main)
