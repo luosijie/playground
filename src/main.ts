@@ -62,11 +62,11 @@ goButton?.addEventListener('click', () => {
     
 const showInfoButton = document.querySelector('button.show-info')
 showInfoButton?.addEventListener('click', () => {
-    gsap.to('.info', { opacity: 1 })
+    gsap.to('.info', { opacity: 1, display: 'flex' })
 })
 
 const closeInfoButton = document.querySelector('button.close-info')
 closeInfoButton?.addEventListener('click', () => {
-    gsap.to('.info', { opacity: 0 })
+    gsap.to('.info', { opacity: 0, display: 'none' })
 })
 

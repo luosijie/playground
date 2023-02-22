@@ -10,31 +10,31 @@ import JoyStick, { StickStatus } from '@/libs/JoyStick'
 
 const options = {
     chassis: {
-        width: 0, // 宽
-        height: 0, // 高
-        length: 0, // 长
+        width: 0,
+        height: 0,
+        length: 0,
         mass: 250
     },
     wheel: {
-        radius: .27, // 半径
-        width: .2, // 宽度
-        height: 0, // 高度
-        offsetWidth: 0.55, // 左右偏移量
-        frontOffsetLength: 0.8, // 前轮偏移量
-        backOffsetLength: 0.7, // 后轮偏移量
-        suspensionStiffness: 55, // 悬挂刚度
-        suspensionRestLength: 0.5, // 悬挂长度
-        frictionSlip: 30, // 滑动摩擦系数
-        dampingRelaxation: 2.3, // 悬挂复原阻尼
+        radius: .27,
+        width: .2,
+        height: 0,
+        offsetWidth: 0.55,
+        frontOffsetLength: 0.8,
+        backOffsetLength: 0.7,
+        suspensionStiffness: 55, 
+        suspensionRestLength: 0.5, 
+        frictionSlip: 30,
+        dampingRelaxation: 2.3,
         dampingCompression: 4.3,
         maxSuspensionForce: 10000,
-        rollInfluence:  0.01, // 施加侧向力时的位置系数, 越小越接近车身, 防止侧翻
+        rollInfluence:  0.01,
         maxSuspensionTravel: 1,
         customSlidingRotationalSpeed: 30,
         useCustomSlidingRotationalSpeed: true,
-        directionLocal: new Vec3(0, 0, -1), // 车轮向下方向
-        axleLocal: new Vec3(1, 0, 0), // 车轴方向
-        chassisConnectionPointLocal: new Vec3(0, 0, 0), // 车轮连接点
+        directionLocal: new Vec3(0, 0, -1),
+        axleLocal: new Vec3(1, 0, 0),
+        chassisConnectionPointLocal: new Vec3(0, 0, 0)
     },
     control: {
         maxSteerVal: 0.5,
@@ -280,6 +280,7 @@ export default class Car {
         const maxForce = this.options.control.maxForce
         const brakeForce = this.options.control.brakeForce
 
+        // for mobile
         if (checkMobile()) {
             const stickContainer = document.createElement('div')
             stickContainer.style.cssText = `
@@ -314,6 +315,8 @@ export default class Car {
             return
         }
 
+        // for desktop
+
         if (this.controls) {
             window.removeEventListener('keydown', this.controls)
             window.removeEventListener('keyup', this.controls)
@@ -347,8 +350,6 @@ export default class Car {
             
                 case 'a':
                 case 'ArrowLeft': // left
-                    // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 0)
-                    // this.vehicle.applyEngineForce(up ? 0 : -maxForce, 1)
                     this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 0)
                     this.vehicle.setSteeringValue(up ? 0 : maxSteerVal, 1)
                     break
@@ -371,8 +372,6 @@ export default class Car {
         }
         window.addEventListener('keydown', this.controls)
         window.addEventListener('keyup', this.controls)
-        // document.onkeydown = this.controls
-        // document.onkeyup = this.controls
     }
 
     update () {

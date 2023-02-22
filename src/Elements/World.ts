@@ -154,8 +154,8 @@ export default class World {
             this.ferris.update()
             this.railCar.update()
             this.bricks.update()
-            this.camera.update()
             this.coffeeSmoke.update(this.clock.getElapsedTime())
+            !this.isDev && this.camera.update()
         } 
         
         if (this.isActive && !this.isDev) {

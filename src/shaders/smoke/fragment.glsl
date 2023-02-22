@@ -2,17 +2,19 @@ uniform float uTime;
 
 varying vec2 vUv;
 
-#include ../common/noise.glsl
+#include ../libs/noise.glsl
 
 void main () {
     vec2 uv = vUv;
-    uv *= 6.;
-    uv.x *= 3.;
-    uv.y += uTime * .8;
-
-    vec3 color = vec3(1.);
-    float opacity = noise(uv);
-    opacity *= noise(vUv);
     
-    gl_FragColor = vec4(color, opacity);   
+    uv *= vec2(6., 1.);
+    uv.y += uTime *.3 ;
+    
+    vec3 color = vec3(1.);
+    float alpha = noise(uv);
+    
+    alpha = alpha - abs(vUv.x);
+    alpha = alpha - (1.0 - vUv.y) * .5;
+    
+    gl_FragColor = vec4(color, alpha);   
 }
