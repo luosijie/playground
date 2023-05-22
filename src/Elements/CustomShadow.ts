@@ -1,4 +1,4 @@
-import { Mesh, Object3D, PlaneGeometry, ShaderMaterial, Vector3, Color, Box3, CircleGeometry, Vector2 } from 'three'
+import { Mesh, Object3D, PlaneGeometry, ShaderMaterial, Vector3, Color, Box3 } from 'three'
 
 import vertexShader from '@/shaders/custom-shadow/vertex.glsl'
 import fragmentShader from '@/shaders/custom-shadow/fragment.glsl'

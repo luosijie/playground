@@ -1,7 +1,7 @@
 import { Mesh, PlaneGeometry, ShaderMaterial, Texture, Vector2, Vector4 } from 'three'
 
-import vertex from './shaders/vertex.glsl?raw'
-import fragment from './shaders/fragment.glsl?raw'
+import vertex from './shaders/vertex.glsl'
+import fragment from './shaders/fragment.glsl'
 
 // import texture from '/images/texture.jpg'
 // import { Size } from './Types'

@@ -1,4 +1,4 @@
-import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World, BodyType, BODY_TYPES, Box, Cylinder, Quaternion, ShapeType, SHAPE_TYPES, Vec3, EventTarget, COLLISION_TYPES} from 'cannon-es'
+import { Body, ContactMaterial, Material, Plane, SAPBroadphase, World, BodyType, BODY_TYPES, Box, Cylinder, Quaternion, ShapeType, SHAPE_TYPES, Vec3} from 'cannon-es'
 
 import { Box3, Mesh} from 'three'
 import Sound from './Sound'

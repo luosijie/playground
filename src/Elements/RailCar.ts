@@ -1,4 +1,4 @@
-import { BufferGeometry, CurvePath, Object3D, LineCurve3, Mesh, Vector3, Group } from 'three'
+import { BufferGeometry, CurvePath, Object3D, LineCurve3, Mesh, Vector3 } from 'three'
 
 const SPEED = 0.0008
 const NUMS = 6

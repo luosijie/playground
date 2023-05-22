@@ -7,7 +7,6 @@ import configResources from './config/resources'
 
 import World from './Elements/World'
 import { Config } from './Types'
-import JoyStick, {StickStatus} from './libs/JoyStick'
 
 const loader = new Loader()
 
