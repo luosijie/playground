@@ -396,11 +396,17 @@ export default class Car {
             const transform = wheelInfo.worldTransform
             const wheelBody = this.physicsBodies.wheels[i]
             // update physics
-            wheelBody.position.set(transform.position.x, transform.position.y, transform.position.z)
-            wheelBody.quaternion.set(transform.quaternion.x, transform.quaternion.y, transform.quaternion.z, transform.quaternion.w)
+            // wheelBody.position.set(transform.position.x, transform.position.y, transform.position.z)
+            // wheelBody.quaternion.set(transform.quaternion.x, transform.quaternion.y, transform.quaternion.z, transform.quaternion.w)
+            wheelBody.position.copy(transform.position)
+            wheelBody.quaternion.copy(transform.quaternion)
+
             // update model
-            this.wheels.children[i].position.copy(wheelBody.position)
-            this.wheels.children[i].quaternion.copy(wheelBody.quaternion)
+            const wheel = this.wheels.children[i]
+            wheel.position.copy(wheelBody.position)
+            wheel.quaternion.set(-transform.quaternion.x, -transform.quaternion.y, transform.quaternion.z, transform.quaternion.w)
+            console.log('we', wheel)
+
         }
 
         this.shadow.update()
